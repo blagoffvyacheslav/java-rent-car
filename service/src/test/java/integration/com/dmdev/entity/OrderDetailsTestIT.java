@@ -1,6 +1,6 @@
 package integration.com.dmdev.entity;
 
-import com.dmdev.entity.Car;
+import com.dmdev.entity.Order;
 import com.dmdev.entity.OrderDetails;
 import integration.com.dmdev.IntegrationBaseTest;
 import org.hibernate.Session;
@@ -8,57 +8,40 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import static integration.com.dmdev.entity.OrderTestIT.getExistOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OrderDetailsTestIT extends IntegrationBaseTest {
 
+    public static final Long TEST_EXISTS_ORDER_DETAILS_ID = 2L;
+    public static final Long TEST_ORDER_DETAILS_ID_FOR_DELETE = 1L;
+
     public static OrderDetails getExistOrderDetails() {
         return OrderDetails.builder()
                 .id(2L)
-                .orderId(2L)
+                .order(getExistOrder())
                 .startDate(LocalDateTime.of(2023, 7, 10, 0, 0))
                 .endDate(LocalDateTime.of(2023, 7, 11, 23, 59))
                 .build();
     }
 
-    public static OrderDetails getUpdatedOrderDetails() {
-        return OrderDetails.builder()
-                .id(2L)
-                .orderId(2L)
-                .startDate(LocalDateTime.of(2023, 8, 4, 00, 00))
-                .endDate(LocalDateTime.of(2023, 8, 5, 23, 59))
-                .build();
-    }
-
     public static OrderDetails createOrderDetails() {
         return OrderDetails.builder()
-                .orderId(3L)
                 .startDate(LocalDateTime.of(2023, 1, 5, 9, 50))
                 .endDate(LocalDateTime.of(2023, 1, 8, 8, 59))
                 .build();
     }
 
     @Test
-    public void shouldCreateOrderDetails() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            Long savedCarRentalTimeId = (Long) session.save(createOrderDetails());
-            session.getTransaction().commit();
-
-            assertEquals(CREATED_TEST_ENTITY_ID, savedCarRentalTimeId);
-        }
-    }
-
-    @Test
     public void shouldReturnOrderDetails() {
         try (Session session = sessionFactory.openSession()) {
-            OrderDetails actualOrderDetails = session.find(OrderDetails.class, EXIST_TEST_ENTITY_ID);
+            OrderDetails expectedOrderDetails = getExistOrderDetails();
+
+            OrderDetails actualOrderDetails = session.find(OrderDetails.class, TEST_EXISTS_ORDER_DETAILS_ID);
 
             assertThat(actualOrderDetails).isNotNull();
-            assertEquals(getExistOrderDetails().getOrderId(), actualOrderDetails.getOrderId());
-            assertEquals(getExistOrderDetails().getStartDate(), actualOrderDetails.getStartDate());
-            assertEquals(getExistOrderDetails().getEndDate(), actualOrderDetails.getEndDate());
+            assertEquals(expectedOrderDetails, actualOrderDetails);
         }
     }
 
@@ -67,25 +50,33 @@ public class OrderDetailsTestIT extends IntegrationBaseTest {
     public void shouldUpdateOrderDetails() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            OrderDetails orderDetailsToUpdate = getUpdatedOrderDetails();
+            OrderDetails orderDetailsToUpdate = session.find(OrderDetails.class, TEST_EXISTS_ORDER_DETAILS_ID);
+
+            orderDetailsToUpdate.setEndDate(LocalDateTime.of(2022, 11, 9, 10, 0));
             session.update(orderDetailsToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.clear();
 
             OrderDetails updatedCarRentalTime = session.find(OrderDetails.class, orderDetailsToUpdate.getId());
+            Order updatedOrder = session.find(Order.class, orderDetailsToUpdate.getOrder().getId());
+            session.getTransaction().commit();
 
             assertThat(updatedCarRentalTime).isEqualTo(orderDetailsToUpdate);
+            assertThat(updatedOrder.getOrderDetails()).isEqualTo(updatedCarRentalTime);
         }
     }
 
     @Test
     public void shouldDeleteOrderDetails() {
         try (Session session = sessionFactory.openSession()) {
-            Car carToDelete = session.find(Car.class, DELETED_TEST_ENTITY_ID);
             session.beginTransaction();
-            session.delete(carToDelete);
+            OrderDetails orderDetailsToDelete = session.find(OrderDetails.class, TEST_ORDER_DETAILS_ID_FOR_DELETE);
+            orderDetailsToDelete.getOrder().setOrderDetails(null);
+
+            session.delete(orderDetailsToDelete);
             session.getTransaction().commit();
 
-            assertThat(session.find(Car.class, carToDelete.getId())).isNull();
+            assertThat(session.find(OrderDetails.class, orderDetailsToDelete.getId())).isNull();
         }
     }
 }

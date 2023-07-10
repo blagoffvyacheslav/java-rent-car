@@ -8,32 +8,27 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
+import static integration.com.dmdev.entity.ModelTestIT.getExistModel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CarRateTestIT extends IntegrationBaseTest {
 
+    public static final Long TEST_EXISTS_CAR_RATE_ID = 2L;
+    public static final Long TEST_CAR_RATE_FOR_DELETE = 1L;
+
     public static CarRate getExistCarRate() {
         return CarRate.builder()
                 .id(2L)
-                .modelId(2L)
                 .price(BigDecimal.valueOf(10000.00))
                 .term(Term.HOURS)
                 .build();
     }
 
-    public static CarRate getUpdatedCarRate() {
-        return CarRate.builder()
-                .id(2L)
-                .modelId(2L)
-                .price(BigDecimal.valueOf(5000.00))
-                .term(Term.DAYS)
-                .build();
-    }
 
     public static CarRate createCarRate() {
         return CarRate.builder()
-                .modelId(2L)
+                .model(getExistModel())
                 .term(Term.HOURS)
                 .build();
     }
@@ -45,19 +40,19 @@ public class CarRateTestIT extends IntegrationBaseTest {
             Long savedCarRateId = (Long) session.save(createCarRate());
             session.getTransaction().commit();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedCarRateId);
+            assertThat(savedCarRateId).isNotNull();
         }
     }
 
     @Test
     public void shouldReturnCarRate() {
         try (Session session = sessionFactory.openSession()) {
-            CarRate actualCarRate = session.find(CarRate.class, EXIST_TEST_ENTITY_ID);
+            CarRate expectedPrice = getExistCarRate();
 
-            assertThat(actualCarRate).isNotNull();
-            assertEquals(getExistCarRate().getModelId(), actualCarRate.getModelId());
-            assertEquals(getExistCarRate().getPrice(), actualCarRate.getPrice());
-            assertEquals(getExistCarRate().getTerm(), actualCarRate.getTerm());
+            CarRate actualPrice = session.find(CarRate.class, TEST_EXISTS_CAR_RATE_ID);
+
+            assertThat(actualPrice).isNotNull();
+            assertEquals(expectedPrice, actualPrice);
         }
     }
 
@@ -65,11 +60,15 @@ public class CarRateTestIT extends IntegrationBaseTest {
     public void shouldUpdateCarRate() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            CarRate carRateToUpdate = getUpdatedCarRate();
+            CarRate carRateToUpdate = session.find(CarRate.class, TEST_EXISTS_CAR_RATE_ID);
+            carRateToUpdate.setPrice(BigDecimal.valueOf(67.90));
+
             session.update(carRateToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.evict(carRateToUpdate);
 
             CarRate updatedCarRate = session.find(CarRate.class, carRateToUpdate.getId());
+            session.getTransaction().commit();
 
             assertThat(updatedCarRate).isEqualTo(carRateToUpdate);
         }
@@ -78,12 +77,13 @@ public class CarRateTestIT extends IntegrationBaseTest {
     @Test
     public void shouldDeleteCarRate() {
         try (Session session = sessionFactory.openSession()) {
-            CarRate carRateToDelete = session.find(CarRate.class, DELETED_TEST_ENTITY_ID);
             session.beginTransaction();
-            session.delete(carRateToDelete);
+            CarRate carToDelete = session.find(CarRate.class, TEST_CAR_RATE_FOR_DELETE);
+
+            session.delete(carToDelete);
             session.getTransaction().commit();
 
-            assertThat(session.find(CarRate.class, carRateToDelete.getId())).isNull();
+            assertThat(session.find(CarRate.class, carToDelete.getId())).isNull();
         }
     }
 }

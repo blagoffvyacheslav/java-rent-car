@@ -1,21 +1,18 @@
 package com.dmdev.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "cars")
+@EqualsAndHashCode(exclude = "cars")
 @Builder
 public class Model {
 
@@ -27,4 +24,13 @@ public class Model {
     @NotNull
     @Column(nullable = false, unique = true)
     private String name;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Car> cars = new HashSet<>();
+
+    public void setCar(Car car) {
+        cars.add(car);
+        car.setModel(this);
+    }
 }

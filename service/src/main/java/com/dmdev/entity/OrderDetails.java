@@ -1,15 +1,8 @@
 package com.dmdev.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -17,6 +10,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "order")
+@EqualsAndHashCode(exclude = "order")
 @Builder
 public class OrderDetails {
 
@@ -26,8 +21,9 @@ public class OrderDetails {
     private Long id;
 
     @NotNull
-    @Column(nullable = false)
-    private Long orderId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private Order order;
 
     @NotNull
     @Column(nullable = false)
@@ -36,4 +32,9 @@ public class OrderDetails {
     @NotNull
     @Column(nullable = false)
     private LocalDateTime endDate;
+
+    public void setOrder(Order order) {
+        order.setOrderDetails(this);
+        this.order = order;
+    }
 }

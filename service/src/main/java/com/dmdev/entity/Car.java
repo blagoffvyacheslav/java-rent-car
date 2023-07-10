@@ -1,21 +1,18 @@
 package com.dmdev.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"model", "orders"})
+@EqualsAndHashCode(of = "serialNumber")
 @Builder
 public class Car {
 
@@ -24,7 +21,9 @@ public class Car {
     @Column(name = "id", unique = true)
     private Long id;
 
-    private Long modelId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "model_id")
+    private Model model;
 
     @NotNull
     @Column(nullable = false, unique = true)
@@ -32,5 +31,9 @@ public class Car {
 
     @NotNull
     private Boolean isNew = Boolean.FALSE;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
 
 }

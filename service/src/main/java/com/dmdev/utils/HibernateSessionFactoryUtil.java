@@ -1,16 +1,8 @@
 package com.dmdev.utils;
 
-import com.dmdev.entity.Car;
-import com.dmdev.entity.CarRate;
-import com.dmdev.entity.Model;
-import com.dmdev.entity.OrderDetails;
-import com.dmdev.entity.DriverLicense;
-import com.dmdev.entity.Order;
-import com.dmdev.entity.User;
-import com.dmdev.entity.UserDetails;
+import com.dmdev.entity.*;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.hibernate.SessionFactory;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.Configuration;
 
@@ -18,8 +10,7 @@ import org.hibernate.cfg.Configuration;
 public class HibernateSessionFactoryUtil {
 
     @SneakyThrows
-    public static SessionFactory buildSessionAnnotationFactory() {
-        SessionFactory sessionFactory;
+    public static Configuration buildConfiguration() {
         Configuration configuration = new Configuration();
 
         configuration
@@ -33,9 +24,8 @@ public class HibernateSessionFactoryUtil {
         configuration.addAnnotatedClass(Order.class);
         configuration.addAnnotatedClass(User.class);
         configuration.addAnnotatedClass(UserDetails.class);
+        configuration.addAnnotatedClass(Damage.class);
         configuration.setPhysicalNamingStrategy(new CamelCaseToUnderscoresNamingStrategy());
-
-        sessionFactory = configuration.buildSessionFactory();
-        return sessionFactory;
+        return configuration;
     }
 }

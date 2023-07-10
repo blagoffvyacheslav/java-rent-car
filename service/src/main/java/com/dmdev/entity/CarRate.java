@@ -1,9 +1,6 @@
 package com.dmdev.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +10,8 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "model")
+@EqualsAndHashCode(exclude = "model")
 @Builder
 public class CarRate {
 
@@ -21,7 +20,9 @@ public class CarRate {
     @Column(name = "id", unique = true)
     private Long id;
 
-    private Long modelId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "model_id")
+    private Model model;
 
     @NotNull
     @Enumerated(EnumType.STRING)

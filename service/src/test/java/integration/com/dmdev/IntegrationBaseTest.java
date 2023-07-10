@@ -8,6 +8,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import util.HibernateTestUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -20,15 +21,11 @@ public abstract class IntegrationBaseTest {
     private final String TRUNCATE_TABLES_PATH = "delete.sql";
     private final String insert_sql = loadSqlScript(INSERT_DATA_PATH);
     private final String delete_sql = loadSqlScript(TRUNCATE_TABLES_PATH);
-
-    public static final Long EXIST_TEST_ENTITY_ID = 2L;
-    public static final Long CREATED_TEST_ENTITY_ID = 3L;
-    public static final Long DELETED_TEST_ENTITY_ID = 1L;
     protected static SessionFactory sessionFactory;
 
     @BeforeAll
     static void setUp() {
-        sessionFactory = HibernateSessionFactoryUtil.buildSessionAnnotationFactory();
+        sessionFactory = HibernateTestUtil.buildSessionFactory();
     }
 
     @BeforeEach

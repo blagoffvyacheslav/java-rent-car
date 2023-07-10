@@ -1,24 +1,21 @@
 package com.dmdev.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"user", "driverLicenses"})
+@EqualsAndHashCode(exclude = {"user", "driverLicenses"})
 @Builder
 public class UserDetails {
 
@@ -28,8 +25,9 @@ public class UserDetails {
     private Long id;
 
     @NotNull
-    @Column(nullable = false)
-    private Long userId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
     @NotNull
     @Column(nullable = false)
@@ -58,5 +56,20 @@ public class UserDetails {
     @Column(nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDate registrationDate = LocalDate.now();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DriverLicense> driverLicenses = new HashSet<>();
+
+    public void setDriverLicense(DriverLicense driverLicense) {
+        driverLicenses.add(driverLicense);
+        driverLicense.setUserDetails(this);
+    }
+
+    public void setUser(User user) {
+        user.setUserDetails(this);
+        this.user = user;
+        this.id = user.getId();
+    }
 
 }

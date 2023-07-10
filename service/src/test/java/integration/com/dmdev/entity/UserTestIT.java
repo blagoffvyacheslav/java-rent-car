@@ -2,6 +2,7 @@ package integration.com.dmdev.entity;
 
 import com.dmdev.entity.Role;
 import com.dmdev.entity.User;
+import com.dmdev.entity.UserDetails;
 import integration.com.dmdev.IntegrationBaseTest;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserTestIT extends IntegrationBaseTest {
+
+    public static final Long TEST_EXISTS_USER_ID = 2L;
+    public static final Long TEST_USER_ID_FOR_DELETE = 1L;
 
     public static User getExistUser() {
         return User.builder()
@@ -43,22 +47,24 @@ public class UserTestIT extends IntegrationBaseTest {
     public void shouldCreateUser() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Long savedUserId = (Long) session.save(createUser());
+            User userToSave = createUser();
+
+            Long savedUserId = (Long) session.save(userToSave);
             session.getTransaction().commit();
 
-            assertEquals(CREATED_TEST_ENTITY_ID, savedUserId);
+            assertThat(savedUserId).isNotNull();
         }
     }
 
     @Test
     public void shouldReturnUser() {
         try (Session session = sessionFactory.openSession()) {
-            User actualUser = session.find(User.class, EXIST_TEST_ENTITY_ID);
+            User expectedUser = getExistUser();
+
+            User actualUser = session.find(User.class, TEST_EXISTS_USER_ID);
 
             assertThat(actualUser).isNotNull();
-            assertEquals(getExistUser().getEmail(), actualUser.getEmail());
-            assertEquals(getExistUser().getLogin(), actualUser.getLogin());
-            assertEquals(getExistUser().getRole(), actualUser.getRole());
+            assertEquals(expectedUser, actualUser);
         }
     }
 
@@ -66,11 +72,17 @@ public class UserTestIT extends IntegrationBaseTest {
     public void shouldUpdateUser() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            User userToUpdate = getUpdatedUser();
+            User userToUpdate = session.find(User.class, TEST_EXISTS_USER_ID);
+            UserDetails userDetails = userToUpdate.getUserDetails();
+            userToUpdate.setPassword("1111");
+            userDetails.setUser(userToUpdate);
+
             session.update(userToUpdate);
-            session.getTransaction().commit();
+            session.flush();
+            session.clear();
 
             User updatedUser = session.find(User.class, userToUpdate.getId());
+            session.getTransaction().commit();
 
             assertThat(updatedUser).isEqualTo(userToUpdate);
         }
@@ -79,8 +91,9 @@ public class UserTestIT extends IntegrationBaseTest {
     @Test
     public void shouldDeleteUser() {
         try (Session session = sessionFactory.openSession()) {
-            User userToDelete = session.find(User.class, DELETED_TEST_ENTITY_ID);
             session.beginTransaction();
+            User userToDelete = session.find(User.class, TEST_USER_ID_FOR_DELETE);
+
             session.delete(userToDelete);
             session.getTransaction().commit();
 
