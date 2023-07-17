@@ -1,0 +1,19 @@
+TRUNCATE TABLE public.driver_license CASCADE;
+TRUNCATE TABLE public.user_details CASCADE;
+TRUNCATE TABLE public.order_details CASCADE;
+TRUNCATE TABLE public.orders CASCADE;
+TRUNCATE TABLE public.users CASCADE;
+TRUNCATE TABLE public.car CASCADE;
+TRUNCATE TABLE public.model CASCADE;
+TRUNCATE TABLE public.car_rate CASCADE;
+TRUNCATE TABLE public.damage CASCADE;
+
+ALTER SEQUENCE driver_license_id_seq RESTART WITH 1;
+ALTER SEQUENCE user_details_id_seq RESTART WITH 1;
+ALTER SEQUENCE order_details_id_seq RESTART WITH 1;
+ALTER SEQUENCE orders_id_seq RESTART WITH 1;
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ALTER SEQUENCE car_id_seq RESTART WITH 1;
+ALTER SEQUENCE model_id_seq RESTART WITH 1;
+ALTER SEQUENCE car_rate_id_seq RESTART WITH 1;
+ALTER SEQUENCE damage_id_seq RESTART WITH 1;
