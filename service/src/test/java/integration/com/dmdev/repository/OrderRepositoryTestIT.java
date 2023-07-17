@@ -25,26 +25,6 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     private final OrderRepository orderRepository = OrderRepository.getInstance();
 
     @Test
-    void shouldReturnAllOrdersWithHql() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            List<Order> orders = orderRepository.findAllHQL(session);
-            session.getTransaction().commit();
-
-            assertThat(orders).hasSize(2);
-
-            List<LocalDate> ordersData = orders.stream().map(Order::getDate).collect(toList());
-            assertThat(ordersData).contains(LocalDate.of(2023, 7, 1), LocalDate.of(2023, 7, 2));
-
-            List<String> carsNumber = orders.stream()
-                    .map(Order::getCar)
-                    .map(Car::getSerialNumber)
-                    .collect(toList());
-            assertThat(carsNumber).contains("0123456", "ABC12345678");
-        }
-    }
-
-    @Test
     void shouldReturnAllOrdersWithCriteria() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();

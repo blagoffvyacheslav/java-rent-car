@@ -11,7 +11,6 @@ public class CriteriaPredicate {
     private final List<Predicate> predicates = new ArrayList<>();
 
     public CriteriaPredicate() {
-        //Do nothing (sonar lint)
     }
 
     public static CriteriaPredicate builder() {
