@@ -17,7 +17,7 @@ import java.util.Set;
 @ToString(exclude = {"user", "driverLicenses"})
 @EqualsAndHashCode(exclude = {"user", "driverLicenses"})
 @Builder
-public class UserDetails {
+public class UserDetails implements BaseEntity<Long>  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

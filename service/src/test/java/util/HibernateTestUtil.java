@@ -19,6 +19,7 @@ public class HibernateTestUtil {
         configuration.setProperty("hibernate.connection.url", postgres.getJdbcUrl());
         configuration.setProperty("hibernate.connection.username", postgres.getUsername());
         configuration.setProperty("hibernate.connection.password", postgres.getPassword());
+        configuration.setProperty("hibernate.current_session_context_class", "org.hibernate.context.internal.ThreadLocalSessionContext");
         return configuration.buildSessionFactory();
     }
 }

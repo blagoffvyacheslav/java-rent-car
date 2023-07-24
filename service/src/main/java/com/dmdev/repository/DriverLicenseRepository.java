@@ -2,6 +2,7 @@ package com.dmdev.repository;
 
 import com.dmdev.dto.DriverLicenseDto;
 import com.dmdev.dto.DriverLicenseFilter;
+import com.dmdev.entity.Car;
 import com.dmdev.entity.DriverLicense;
 import com.dmdev.entity.DriverLicense_;
 import com.dmdev.entity.UserDetails_;
@@ -11,6 +12,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,11 +21,10 @@ import java.util.Optional;
 import static com.dmdev.entity.QDriverLicense.driverLicense;
 import static com.dmdev.entity.QUserDetails.userDetails;
 
-public class DriverLicenseRepository{
-    private static final DriverLicenseRepository INSTANCE = new DriverLicenseRepository();
+public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense> {
 
-    public static DriverLicenseRepository getInstance() {
-        return INSTANCE;
+    public DriverLicenseRepository(EntityManager entityManager) {
+        super(DriverLicense.class, entityManager);
     }
 
     public List<DriverLicense> findAllCriteria(Session session) {

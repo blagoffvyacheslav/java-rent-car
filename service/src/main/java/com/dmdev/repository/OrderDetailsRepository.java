@@ -1,6 +1,7 @@
 package com.dmdev.repository;
 
 import com.dmdev.dto.OrderDetailsFilter;
+import com.dmdev.entity.Model;
 import com.dmdev.entity.OrderDetails;
 import com.dmdev.entity.OrderDetails_;
 import com.dmdev.entity.Order_;
@@ -9,6 +10,7 @@ import com.dmdev.utils.QPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -16,11 +18,9 @@ import java.util.Optional;
 import static com.dmdev.entity.QOrderDetails.orderDetails;
 import static com.dmdev.entity.QOrder.order;
 
-public class OrderDetailsRepository {
-    private static final OrderDetailsRepository INSTANCE = new OrderDetailsRepository();
-
-    public static OrderDetailsRepository getInstance() {
-        return INSTANCE;
+public class OrderDetailsRepository extends BaseRepository<Long, OrderDetails> {
+    public OrderDetailsRepository(EntityManager entityManager) {
+        super(OrderDetails.class, entityManager);
     }
 
     public List<OrderDetails> findAllCriteria(Session session) {

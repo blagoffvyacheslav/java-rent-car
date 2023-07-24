@@ -1,23 +1,23 @@
 package com.dmdev.repository;
 
 import com.dmdev.dto.ModelFilter;
+import com.dmdev.entity.DriverLicense;
 import com.dmdev.entity.Model;
 import com.dmdev.entity.Model_;
 import com.dmdev.utils.CriteriaPredicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
 
 import static com.dmdev.entity.QModel.model;
 
-public class ModelRepository{
-    private static final ModelRepository INSTANCE = new ModelRepository();
-
-    public static ModelRepository getInstance() {
-        return INSTANCE;
+public class ModelRepository extends BaseRepository<Long, Model> {
+    public ModelRepository(EntityManager entityManager) {
+        super(Model.class, entityManager);
     }
 
     public List<Model> findAllCriteria(Session session) {
