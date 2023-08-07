@@ -1,15 +1,13 @@
 package com.dmdev.repository;
 
 import com.dmdev.dto.OrderFilter;
-import com.dmdev.entity.Car_;
-import com.dmdev.entity.Order;
-import com.dmdev.entity.Order_;
-import com.dmdev.entity.OrderStatus;
+import com.dmdev.entity.*;
 import com.dmdev.utils.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -19,11 +17,10 @@ import static com.dmdev.entity.QDamage.damage;
 import static com.dmdev.entity.QModel.model;
 import static com.dmdev.entity.QOrder.order;
 
-public class OrderRepository{
-    private static final OrderRepository INSTANCE = new OrderRepository();
+public class OrderRepository extends BaseRepository<Long, Order>{
 
-    public static OrderRepository getInstance() {
-        return INSTANCE;
+    public OrderRepository(EntityManager entityManager) {
+        super(Order.class, entityManager);
     }
 
     public List<Order> findAllCriteria(Session session) {

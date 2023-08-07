@@ -14,9 +14,9 @@ import java.time.LocalDate;
 @ToString(exclude = "order")
 @EqualsAndHashCode(exclude = "order")
 @Builder
-public class Damage {
+public class Damage implements BaseEntity<Long> {
 
-    @Id
+        @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true)
     private Long id;

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @ToString(exclude = "order")
 @EqualsAndHashCode(exclude = "order")
 @Builder
-public class OrderDetails {
+public class OrderDetails implements BaseEntity<Long>  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

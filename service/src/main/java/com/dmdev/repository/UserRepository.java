@@ -3,6 +3,7 @@ package com.dmdev.repository;
 import com.dmdev.dto.UserDto;
 import com.dmdev.dto.UserFilter;
 import com.dmdev.entity.User;
+import com.dmdev.entity.UserDetails;
 import com.dmdev.entity.UserDetails_;
 import com.dmdev.entity.User_;
 import com.dmdev.utils.CriteriaPredicate;
@@ -11,6 +12,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +20,9 @@ import java.util.Optional;
 import static com.dmdev.entity.QUser.user;
 import static com.dmdev.entity.QUserDetails.userDetails;
 
-public class UserRepository{
-    private static final UserRepository INSTANCE = new UserRepository();
-
-    public static UserRepository getInstance() {
-        return INSTANCE;
+public class UserRepository extends BaseRepository<Long, User>{
+    public UserRepository(EntityManager entityManager) {
+        super(User.class, entityManager);
     }
 
     public List<User> findAllCriteria(Session session) {

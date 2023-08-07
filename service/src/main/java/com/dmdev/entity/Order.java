@@ -18,7 +18,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = {"user", "car", "orderDetails", "damages"})
 @Builder
 @Table(name = "orders")
-public class Order {
+public class Order implements BaseEntity<Long>  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

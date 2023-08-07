@@ -14,7 +14,7 @@ import java.util.Set;
 @ToString(exclude = "cars")
 @EqualsAndHashCode(exclude = "cars")
 @Builder
-public class Model {
+public class Model implements BaseEntity<Long>  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

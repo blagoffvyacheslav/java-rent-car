@@ -5,16 +5,16 @@ import com.dmdev.entity.Car_;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
 import static com.dmdev.entity.QCar.car;
 
-public class CarRepository{
-    private static final CarRepository INSTANCE = new CarRepository();
+public class CarRepository extends BaseRepository<Long, Car>{
 
-    public static CarRepository getInstance() {
-        return INSTANCE;
+    public CarRepository(EntityManager entityManager) {
+        super(Car.class, entityManager);
     }
 
     public List<Car> findAllCriteria(Session session) {

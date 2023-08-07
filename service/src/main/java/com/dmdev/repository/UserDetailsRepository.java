@@ -1,15 +1,13 @@
 package com.dmdev.repository;
 
 import com.dmdev.dto.UserDetailsFilter;
-import com.dmdev.entity.User;
-import com.dmdev.entity.UserDetails;
-import com.dmdev.entity.UserDetails_;
-import com.dmdev.entity.User_;
+import com.dmdev.entity.*;
 import com.dmdev.utils.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +15,9 @@ import java.util.Optional;
 import static com.dmdev.entity.QUser.user;
 import static com.dmdev.entity.QUserDetails.userDetails;
 
-public class UserDetailsRepository{
-    private static final UserDetailsRepository INSTANCE = new UserDetailsRepository();
-
-    public static UserDetailsRepository getInstance() {
-        return INSTANCE;
+public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
+    public UserDetailsRepository(EntityManager entityManager) {
+        super(UserDetails.class, entityManager);
     }
 
     public List<UserDetails> findAllCriteria(Session session) {

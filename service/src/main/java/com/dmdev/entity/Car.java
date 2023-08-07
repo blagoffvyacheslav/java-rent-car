@@ -14,7 +14,7 @@ import java.util.List;
 @ToString(exclude = {"model", "orders"})
 @EqualsAndHashCode(of = "serialNumber")
 @Builder
-public class Car {
+public class Car implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
