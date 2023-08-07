@@ -14,21 +14,13 @@ import java.util.Optional;
 
 import static com.dmdev.entity.QUser.user;
 import static com.dmdev.entity.QUserDetails.userDetails;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
     public UserDetailsRepository(EntityManager entityManager) {
         super(UserDetails.class, entityManager);
-    }
-
-    public List<UserDetails> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDetails.class);
-        var userDetails = criteria.from(UserDetails.class);
-
-        criteria.select(userDetails);
-
-        return session.createQuery(criteria)
-                .list();
     }
 
     public List<UserDetails> findAllQueryDsl(Session session) {
@@ -38,35 +30,12 @@ public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
                 .fetch();
     }
 
-    public Optional<UserDetails> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDetails.class);
-        var userDetails = criteria.from(UserDetails.class);
-
-        criteria.select(userDetails)
-                .where(cb.equal(userDetails.get(UserDetails_.id), id));
-
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
-    }
-
     public Optional<UserDetails> findByIdQueryDsl(Session session, Long id) {
         return Optional.ofNullable(new JPAQuery<User>(session)
                 .select(userDetails)
                 .from(userDetails)
                 .where(userDetails.id.eq(id))
                 .fetchOne());
-    }
-
-    public Optional<UserDetails> findUserDetailsByUserIdCriteria(Session session, Long userId) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(UserDetails.class);
-        var userDetails = criteria.from(UserDetails.class);
-        var user = userDetails.join(UserDetails_.user);
-
-        criteria.select(userDetails)
-                .where(cb.equal(user.get(User_.id), userId));
-
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
     }
 
     public List<UserDetails> findUserDetailsByNameAndSurnameQueryDsl(Session session, UserDetailsFilter userDetailsFilter) {
