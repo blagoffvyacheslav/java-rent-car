@@ -21,27 +21,27 @@ import static com.dmdev.entity.QOrder.order;
 @Repository
 public class OrderRepository extends BaseRepository<Long, Order>{
 
-    public OrderRepository(EntityManager entityManager) {
-        super(Order.class, entityManager);
+    public OrderRepository() {
+        super(Order.class);
     }
 
-    public List<Order> findAllQueryDsl(Session session) {
-        return new JPAQuery<Order>(session)
+    public List<Order> findAllQueryDsl() {
+        return new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .fetch();
     }
 
-    public Optional<Order> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Order>(session)
+    public Optional<Order> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .where(order.id.eq(id))
                 .fetchOne());
     }
 
-    public List<Tuple> findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl(Session session) {
-        return new JPAQuery<Tuple>(session)
+    public List<Tuple> findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl() {
+        return new JPAQuery<Tuple>(getEntityManager())
                 .select(order.date, order.amount.avg())
                 .from(order)
                 .groupBy(order.date)
@@ -49,12 +49,12 @@ public class OrderRepository extends BaseRepository<Long, Order>{
                 .fetch();
     }
 
-    public List<Order> findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(Session session, OrderFilter orderFilter) {
+    public List<Order> findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(OrderFilter orderFilter) {
         var predicates = QPredicate.builder()
                 .add(orderFilter.getModelName(), model.name::eq)
                 .buildAnd();
 
-        return new JPAQuery<Order>(session)
+        return new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .join(order.car, car)
@@ -64,14 +64,14 @@ public class OrderRepository extends BaseRepository<Long, Order>{
                 .fetch();
     }
 
-    public List<Order> findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl(Session session) {
-        return new JPAQuery<Order>(session)
+    public List<Order> findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl() {
+        return new JPAQuery<Order>(getEntityManager())
                 .select(order)
                 .from(order)
                 .join(order.damages, damage)
                 .groupBy(order.id)
                 .having(damage.amount.avg().gt(
-                        new JPAQuery<BigDecimal>(session)
+                        new JPAQuery<BigDecimal>(getEntityManager())
                                 .select(damage.amount.avg())
                                 .from(damage)
                 ))

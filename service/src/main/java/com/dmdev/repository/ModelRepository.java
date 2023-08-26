@@ -15,20 +15,20 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class ModelRepository extends BaseRepository<Long, Model> {
-    public ModelRepository(EntityManager entityManager) {
-        super(Model.class, entityManager);
+    public ModelRepository() {
+        super(Model.class);
     }
 
-    public List<Model> findAllQueryDsl(Session session) {
-        return new JPAQuery<Model>(session)
+    public List<Model> findAllQueryDsl() {
+        return new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .fetch();
     }
 
 
-    public Optional<Model> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Model>(session)
+    public Optional<Model> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Model>(getEntityManager())
                 .select(model)
                 .from(model)
                 .where(model.id.eq(id))

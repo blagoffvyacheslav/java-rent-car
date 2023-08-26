@@ -19,45 +19,45 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserDetailsRepository extends BaseRepository<Long, UserDetails> {
-    public UserDetailsRepository(EntityManager entityManager) {
-        super(UserDetails.class, entityManager);
+    public UserDetailsRepository() {
+        super(UserDetails.class);
     }
 
-    public List<UserDetails> findAllQueryDsl(Session session) {
-        return new JPAQuery<UserDetails>(session)
+    public List<UserDetails> findAllQueryDsl() {
+        return new JPAQuery<UserDetails>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .fetch();
     }
 
-    public Optional<UserDetails> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<User>(session)
+    public Optional<UserDetails> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<User>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .where(userDetails.id.eq(id))
                 .fetchOne());
     }
 
-    public List<UserDetails> findUserDetailsByNameAndSurnameQueryDsl(Session session, UserDetailsFilter userDetailsFilter) {
+    public List<UserDetails> findUserDetailsByNameAndSurnameQueryDsl(UserDetailsFilter userDetailsFilter) {
         var predicate = QPredicate.builder()
                 .add(userDetailsFilter.getName(), userDetails.name::eq)
                 .add(userDetailsFilter.getSurname(), userDetails.lastname::eq)
                 .buildAnd();
 
-        return new JPAQuery<UserDetails>(session)
+        return new JPAQuery<UserDetails>(getEntityManager())
                 .select(userDetails)
                 .from(userDetails)
                 .where(predicate)
                 .fetch();
     }
 
-    public List<Tuple> findUsersDetailsTupleByBirthdayOrderedBySurnameAndNameQueryDsl(Session session, LocalDate localDate) {
+    public List<Tuple> findUsersDetailsTupleByBirthdayOrderedBySurnameAndNameQueryDsl(LocalDate localDate) {
         var predicate = QPredicate.builder()
                 .add(localDate.getMonth().getValue(), userDetails.birthday.month().intValue()::eq)
                 .add(localDate.getDayOfMonth(), userDetails.birthday.dayOfMonth()::eq)
                 .buildAnd();
 
-        return new JPAQuery<Tuple>(session)
+        return new JPAQuery<Tuple>(getEntityManager())
                 .select(userDetails.lastname, userDetails.name, userDetails.birthday, user.email)
                 .from(userDetails)
                 .join(userDetails.user, user)

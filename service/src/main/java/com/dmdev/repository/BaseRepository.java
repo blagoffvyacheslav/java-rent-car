@@ -3,6 +3,7 @@ package com.dmdev.repository;
 import com.dmdev.entity.BaseEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 import java.io.Serializable;
@@ -13,7 +14,8 @@ import java.util.Optional;
 public abstract class BaseRepository<K extends Serializable, E extends BaseEntity<K>> {
     private final Class<E> clazz;
     @Getter
-    private final EntityManager entityManager;
+    @Autowired
+    private EntityManager entityManager;
 
     public E save(E entity) {
         entityManager.persist(entity);

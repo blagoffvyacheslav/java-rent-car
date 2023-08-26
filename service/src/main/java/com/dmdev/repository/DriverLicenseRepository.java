@@ -19,20 +19,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense> {
 
-    public DriverLicenseRepository(EntityManager entityManager) {
-        super(DriverLicense.class, entityManager);
+    public DriverLicenseRepository() {
+        super(DriverLicense.class);
     }
 
-    public List<DriverLicense> findAllQueryDsl(Session session) {
-        return new JPAQuery<DriverLicense>(session)
+    public List<DriverLicense> findAllQueryDsl() {
+        return new JPAQuery<DriverLicense>(getEntityManager())
                 .select(driverLicense)
                 .from(driverLicense)
                 .fetch();
     }
 
 
-    public Optional<DriverLicense> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<DriverLicense>(session)
+    public Optional<DriverLicense> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<DriverLicense>(getEntityManager())
                 .select(driverLicense)
                 .from(driverLicense)
                 .where(driverLicense.id.eq(id))
@@ -40,7 +40,7 @@ public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense>
     }
 
 
-    public List<DriverLicense> findDriverLicensesByIssueAndExpiredDateQueryDsl(Session session, DriverLicenseFilter driverLicenseFilter) {
+    public List<DriverLicense> findDriverLicensesByIssueAndExpiredDateQueryDsl(DriverLicenseFilter driverLicenseFilter) {
         var predicateIssueDte = QPredicate.builder()
                 .add(driverLicenseFilter.getIssueDate(), driverLicense.issueDate::eq)
                 .add(driverLicenseFilter.getIssueDate(), driverLicense.issueDate::gt)
@@ -56,7 +56,7 @@ public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense>
                 .addPredicate(predicateExpiredDate)
                 .buildAnd();
 
-        return new JPAQuery<DriverLicense>(session)
+        return new JPAQuery<DriverLicense>(getEntityManager())
                 .select(driverLicense)
                 .from(driverLicense)
                 .where(predicateAll)
@@ -64,13 +64,13 @@ public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense>
     }
 
 
-    public List<Tuple> findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(Session session, LocalDate expiredDate) {
+    public List<Tuple> findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(LocalDate expiredDate) {
         var predicate = QPredicate.builder()
                 .add(expiredDate, driverLicense.expiredDate::eq)
                 .add(expiredDate, driverLicense.expiredDate::lt)
                 .buildOr();
 
-        return new JPAQuery<Tuple>(session)
+        return new JPAQuery<Tuple>(getEntityManager())
                 .select(userDetails.name, userDetails.lastname,
                         driverLicense.number, driverLicense.issueDate,
                         driverLicense.expiredDate)
