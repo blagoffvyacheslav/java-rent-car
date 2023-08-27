@@ -15,10 +15,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"user", "car", "orderDetails", "damages"})
-@EqualsAndHashCode(exclude = {"user", "car", "orderDetails", "damages"})
+@EqualsAndHashCode(exclude = {"user", "car", "orderDetails", "damages"}, callSuper = false)
 @Builder
 @Table(name = "orders")
-public class Order implements BaseEntity<Long>  {
+public class Order extends AuditingEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

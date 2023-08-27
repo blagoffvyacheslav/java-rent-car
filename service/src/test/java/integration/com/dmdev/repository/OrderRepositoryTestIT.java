@@ -1,6 +1,5 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.dto.OrderFilter;
 import com.dmdev.entity.*;
 import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.OrderRepository;
@@ -72,7 +71,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         orderToUpdate.setInsurance(false);
         orderDetails.setOrder(orderToUpdate);
 
-        orderRepository.update(orderToUpdate);
+        orderRepository.save(orderToUpdate);
 
         var updatedOrder = orderRepository.findById(orderToUpdate.getId()).get();
 
@@ -98,66 +97,5 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
 
         List<BigDecimal> amounts = orders.stream().map(Order::getAmount).collect(toList());
         assertThat(amounts).containsExactlyInAnyOrder(BigDecimal.valueOf(1020.0).setScale(2), BigDecimal.valueOf(10000.0).setScale(2));
-    }
-
-    @Test
-    void shouldReturnAllOrdersWithQueryDsl() {
-        List<Order> orders = orderRepository.findAllQueryDsl();
-
-        assertThat(orders).hasSize(2);
-
-        List<LocalDate> ordersData = orders.stream().map(Order::getDate).collect(toList());
-        assertThat(ordersData).contains(LocalDate.of(2023, 7, 1), LocalDate.of(2023, 7, 2));
-
-        List<String> carsNumber = orders.stream()
-                .map(Order::getCar)
-                .map(Car::getSerialNumber)
-                .collect(toList());
-        assertThat(carsNumber).contains("0123456", "ABC12345678");
-    }
-
-    @Test
-    void shouldReturnOrderByIdWithQueryDsl() {
-            Optional<Order> optionalOrder = orderRepository.findByIdQueryDsl(OrderTestIT.TEST_EXISTS_ORDER_ID);
-
-            assertThat(optionalOrder).isNotNull();
-            optionalOrder.ifPresent(order -> assertThat(order).isEqualTo(OrderTestIT.getExistOrder()));
-    }
-
-
-
-    @Test
-    void shouldReturnOrdersByBrandNameAndModelNameOrderByDateQueryDsl() {
-            OrderFilter orderFilter = OrderFilter.builder()
-                    .modelName("Benz")
-                    .build();
-
-            List<Order> orders = orderRepository.findOrdersByBrandNameAndModelNameOrderByDateQueryDsl(orderFilter);
-
-            assertThat(orders).hasSize(1);
-            assertThat(orders.get(0)).isEqualTo(OrderTestIT.getExistOrder());
-    }
-
-    @Test
-    void shouldReturnOrdersWhereAccidentsSumMoreThanAvgOrderByDateQueryDsl() {
-
-            List<Order> orders = orderRepository.findOrdersWhereAccidentsSumMoreThanAvgSumOrderByDateQueryDsl();
-
-            assertThat(orders).hasSize(1);
-            assertThat(orders.get(0)
-                    .getDamages()
-                    .stream()
-                    .map(Damage::getAmount)
-                    .collect(toList()))
-                    .contains(BigDecimal.valueOf(100.00).setScale(2));
-    }
-
-    @Test
-    void shouldReturnTuplesWithAvgSumAndDateOrderByDateQueryDsl() {
-
-            List<Tuple> orders = orderRepository.findOrderTuplesWithAvgSumAndDateOrderByDateQueryDsl();
-            assertThat(orders).hasSize(2);
-            List<LocalDate> dates = orders.stream().map(r -> r.get(0, LocalDate.class)).collect(toList());
-            assertThat(dates).containsAll(List.of(LocalDate.of(2023, 7, 2), LocalDate.of(2023, 7, 1)));
     }
 }

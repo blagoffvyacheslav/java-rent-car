@@ -1,38 +1,40 @@
 package com.dmdev.repository;
 
 import com.dmdev.entity.Car;
-import com.querydsl.jpa.impl.JPAQuery;
-import org.hibernate.Session;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
-import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.stereotype.Repository;
 
-import static com.dmdev.entity.QCar.car;
+public interface CarRepository extends JpaRepository<Car, Long>, QuerydslPredicateExecutor<Car> {
 
-@Repository
-public class CarRepository extends BaseRepository<Long, Car>{
+    Optional<Car> findBySerialNumber(String serialNumber);
 
-    public CarRepository() {
-        super(Car.class);
-    }
+    List<Car> findBySerialNumberContainingIgnoreCase(String serialNumber);
 
 
-    public List<Car> findAllQueryDsl() {
-        return new JPAQuery<Car>(getEntityManager())
-                .select(car)
-                .from(car)
-                .fetch();
-    }
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "JOIN fetch c.orders o " +
+            "JOIN fetch o.damages a " +
+            "WHERE o.damages.size > 0 ")
+    List<Car> findAllWithDamages();
 
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "JOIN fetch c.orders o " +
+            "JOIN fetch o.damages a " +
+            "WHERE o.damages.size = 0 ")
+    List<Car> findAllWithoutDamages();
 
-    public Optional<Car> findByIdQueryDsl(Long id) {
-        return Optional.ofNullable(new JPAQuery<Car>(getEntityManager())
-                .select(car)
-                .from(car)
-                .where(car.id.eq(id))
-                .fetchOne());
-    }
-
+    @Query(value = "SELECT count(o.id) = 0 " +
+            "FROM orders o " +
+            "JOIN car c on o.car_id = c.id " +
+            "WHERE c.id = :id AND o.id IN (SELECT order_id FROM order_details od WHERE od.start_date <= :endDate AND " +
+            "od.end_date >= :startDate)", nativeQuery = true)
+    boolean isCarAvailable(@Param("id") Long id, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

@@ -12,10 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"userDetails", "orders"})
-@EqualsAndHashCode(of = {"login", "email"})
+@EqualsAndHashCode(of = {"login", "email"}, callSuper = false)
 @Builder
 @Table(name = "users")
-public class User implements BaseEntity<Long>  {
+public class User extends AuditingEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
