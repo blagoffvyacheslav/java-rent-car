@@ -4,24 +4,47 @@ import lombok.SneakyThrows;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import util.HibernateTestUtil;
+
+import java.io.IOException;
 import java.lang.reflect.Proxy;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.dmdev.configuration.BeansConfiguration;
+
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 public abstract class IntegrationBaseTest {
     private static final String INSERT_DATA_PATH = "inserts.sql";
     private static final String TRUNCATE_TABLES_PATH = "delete.sql";
-    private static final String insert_sql = loadSqlScript(INSERT_DATA_PATH);
-    private static final String delete_sql = loadSqlScript(TRUNCATE_TABLES_PATH);
-    protected static SessionFactory sessionFactory;
+    private static final String insert_sql;
+
+    static {
+        try {
+            insert_sql = loadSqlScript(INSERT_DATA_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final String delete_sql;
+
+    static {
+        try {
+            delete_sql = loadSqlScript(TRUNCATE_TABLES_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static AnnotationConfigApplicationContext context;
 
     protected Session createProxySession(SessionFactory sessionFactory) {
         return (Session) Proxy.newProxyInstance(
@@ -31,51 +54,28 @@ public abstract class IntegrationBaseTest {
 
     @BeforeAll
     static void setUp() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            session.createSQLQuery(insert_sql).executeUpdate();
-            session.getTransaction().commit();
-        }
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(BeansConfiguration.class);
+        Session session = context.getBean(Session.class);
+        session.beginTransaction();
+        session.createSQLQuery(insert_sql).executeUpdate();
+        session.getTransaction().commit();
     }
 
-//    @BeforeEach
-//    void insertData() {
-//        try (Session session = sessionFactory.openSession()) {
-//            session.beginTransaction();
-//            session.createSQLQuery(insert_sql).executeUpdate();
-//            session.getTransaction().commit();
-//        }
-//    }
-
-//    @AfterEach
-//    void deleteDataFromAllTables() {
-//        try (Session session = sessionFactory.openSession()) {
-//            session.beginTransaction();
-//            session.createSQLQuery(delete_sql).executeUpdate();
-//            session.getTransaction().commit();
-//        }
-//    }
 
     @AfterAll
     @SneakyThrows
     static void tearDown() {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            session.createSQLQuery(delete_sql).executeUpdate();
-            session.getTransaction().commit();
-        }
-        if (sessionFactory != null) {
-            sessionFactory.close();
-        }
+        Session session = context.getBean(Session.class);
+        session.beginTransaction();
+        session.createSQLQuery(delete_sql).executeUpdate();
+        session.getTransaction().commit();
     }
 
-    private static String loadSqlScript(String filePath) {
-        InputStream inputStream = IntegrationBaseTest.class.getClassLoader().getResourceAsStream(filePath);
-        if (inputStream == null) {
-            throw new IllegalArgumentException("File not found: " + filePath);
+    private static String loadSqlScript(String filePath) throws IOException {
+        try (InputStream inputStream = IntegrationBaseTest.class.getClassLoader().getResourceAsStream(filePath);
+             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF_8));
+             Stream<String> result = bufferedReader.lines()) {
+            return result.collect(joining());
         }
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        return bufferedReader.lines().collect(Collectors.joining());
     }
 }

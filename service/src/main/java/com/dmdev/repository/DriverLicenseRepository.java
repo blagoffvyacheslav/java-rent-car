@@ -1,41 +1,26 @@
 package com.dmdev.repository;
 
-import com.dmdev.dto.DriverLicenseDto;
 import com.dmdev.dto.DriverLicenseFilter;
-import com.dmdev.entity.Car;
 import com.dmdev.entity.DriverLicense;
-import com.dmdev.entity.DriverLicense_;
-import com.dmdev.entity.UserDetails_;
-import com.dmdev.utils.CriteriaPredicate;
 import com.dmdev.utils.QPredicate;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static com.dmdev.entity.QDriverLicense.driverLicense;
 import static com.dmdev.entity.QUserDetails.userDetails;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense> {
 
     public DriverLicenseRepository(EntityManager entityManager) {
         super(DriverLicense.class, entityManager);
-    }
-
-    public List<DriverLicense> findAllCriteria(Session session) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicense.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-
-        criteria.select(driverLicense);
-
-        return session.createQuery(criteria)
-                .list();
     }
 
     public List<DriverLicense> findAllQueryDsl(Session session) {
@@ -45,16 +30,6 @@ public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense>
                 .fetch();
     }
 
-    public Optional<DriverLicense> findByIdCriteria(Session session, Long id) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicense.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-
-        criteria.select(driverLicense)
-                .where(cb.equal(driverLicense.get(DriverLicense_.id), id));
-
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
-    }
 
     public Optional<DriverLicense> findByIdQueryDsl(Session session, Long id) {
         return Optional.ofNullable(new JPAQuery<DriverLicense>(session)
@@ -64,44 +39,6 @@ public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense>
                 .fetchOne());
     }
 
-    public Optional<DriverLicense> findDriverLicenseByNumberCriteria(Session session, String driverLicenseNumber) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicense.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-
-        criteria.select(driverLicense)
-                .where(cb.equal(driverLicense.get(DriverLicense_.number), driverLicenseNumber));
-
-        return Optional.ofNullable(session.createQuery(criteria).uniqueResult());
-    }
-
-    public List<DriverLicense> findDriverLicenseByExpiredDateOrLessCriteria(Session session, LocalDate expiredDate) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicense.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-
-        criteria.select(driverLicense)
-                .where(cb.lessThanOrEqualTo(driverLicense.get(DriverLicense_.expiredDate), expiredDate));
-
-        return session.createQuery(criteria)
-                .list();
-    }
-
-    public List<DriverLicense> findDriverLicensesByIssueAndExpiredDateCriteria(Session session, DriverLicenseFilter driverLicenseFilter) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicense.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-        Predicate[] predicates = CriteriaPredicate.builder()
-                .add(driverLicenseFilter.getIssueDate(), issueDate -> cb.greaterThanOrEqualTo(driverLicense.get(DriverLicense_.issueDate), issueDate))
-                .add(driverLicenseFilter.getExpiredDate(), expiredDate -> cb.lessThanOrEqualTo(driverLicense.get(DriverLicense_.expiredDate), expiredDate))
-                .getPredicates();
-
-        criteria.select(driverLicense)
-                .where(predicates);
-
-        return session.createQuery(criteria)
-                .list();
-    }
 
     public List<DriverLicense> findDriverLicensesByIssueAndExpiredDateQueryDsl(Session session, DriverLicenseFilter driverLicenseFilter) {
         var predicateIssueDte = QPredicate.builder()
@@ -126,28 +63,6 @@ public class DriverLicenseRepository extends BaseRepository<Long, DriverLicense>
                 .fetch();
     }
 
-    public List<DriverLicenseDto> findDriverLicensesByExpiredDateOrderBySurnameCriteria(Session session, LocalDate expiredDate) {
-        var cb = session.getCriteriaBuilder();
-        var criteria = cb.createQuery(DriverLicenseDto.class);
-        var driverLicense = criteria.from(DriverLicense.class);
-        var userDetails = driverLicense.join(DriverLicense_.userDetails);
-        Predicate predicate = cb.lessThan(driverLicense.get(DriverLicense_.expiredDate), expiredDate);
-
-        criteria.select(
-                        cb.construct(DriverLicenseDto.class,
-                                userDetails.get(UserDetails_.name),
-                                userDetails.get(UserDetails_.lastname),
-                                driverLicense.get(DriverLicense_.number),
-                                driverLicense.get(DriverLicense_.issueDate),
-                                driverLicense.get(DriverLicense_.expiredDate))
-
-                )
-                .where(predicate)
-                .orderBy(cb.asc(userDetails.get(UserDetails_.lastname)));
-
-        return session.createQuery(criteria)
-                .list();
-    }
 
     public List<Tuple> findDriverLicensesTupleByExpiredDateOrderBySurnameQueryDsl(Session session, LocalDate expiredDate) {
         var predicate = QPredicate.builder()

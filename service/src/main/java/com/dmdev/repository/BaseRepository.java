@@ -20,8 +20,8 @@ public abstract class BaseRepository<K extends Serializable, E extends BaseEntit
         return entity;
     }
 
-    public void delete(K id) {
-        entityManager.remove(entityManager.find(clazz, id));
+    public void delete(E entity) {
+        entityManager.remove(entityManager.find(clazz, entity.getId()));
         entityManager.flush();
     }
 

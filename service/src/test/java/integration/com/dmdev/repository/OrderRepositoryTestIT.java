@@ -2,8 +2,9 @@ package integration.com.dmdev.repository;
 
 import com.dmdev.dto.OrderFilter;
 import com.dmdev.entity.*;
-import com.dmdev.repository.OrderDetailsRepository;
+import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.OrderRepository;
+import com.dmdev.repository.UserRepository;
 import com.querydsl.core.Tuple;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.entity.CarTestIT;
@@ -25,14 +26,16 @@ import static org.junit.Assert.assertEquals;
 
 class OrderRepositoryTestIT extends IntegrationBaseTest {
 
-    private final Session session = createProxySession(sessionFactory);
-    private final OrderRepository orderRepository = new OrderRepository(session);
+    private final Session session = context.getBean(Session.class);
+    private final OrderRepository orderRepository = context.getBean(OrderRepository.class);
+    private final UserRepository userRepository = context.getBean(UserRepository.class);
+    private final CarRepository carRepository = context.getBean(CarRepository.class);
 
     @Test
     void shouldSaveOrder() {
         session.beginTransaction();
-        var user = session.get(User.class, UserTestIT.TEST_EXISTS_USER_ID);
-        var car = session.get(Car.class, CarTestIT.TEST_EXISTS_CAR_ID);
+        var user = userRepository.findById(UserTestIT.TEST_EXISTS_USER_ID).get();
+        var car = carRepository.findById(CarTestIT.TEST_EXISTS_CAR_ID).get();
         var orderToSave = OrderTestIT.createOrder();
         orderToSave.setUser(user);
         orderToSave.setCar(car);
@@ -62,7 +65,8 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     void shouldUpdateOrder() {
         session.beginTransaction();
         var startRentalDate = LocalDateTime.of(2022, 10, 11, 13, 0);
-        var orderToUpdate = session.find(Order.class, OrderTestIT.TEST_EXISTS_ORDER_ID);
+        var orderToUpdate = orderRepository.findById(OrderTestIT.TEST_EXISTS_ORDER_ID).get();
+
         var orderDetails = orderToUpdate.getOrderDetails();
         orderDetails.setStartDate(startRentalDate);
         orderToUpdate.setInsurance(false);
@@ -71,7 +75,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
         orderRepository.update(orderToUpdate);
         session.clear();
 
-        var updatedOrder = session.find(Order.class, orderToUpdate.getId());
+        var updatedOrder = orderRepository.findById(orderToUpdate.getId()).get();
 
         assertThat(updatedOrder).isEqualTo(orderToUpdate);
         assertThat(updatedOrder.getOrderDetails().getStartDate()).isEqualTo(startRentalDate);
@@ -81,10 +85,12 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteOrder() {
         session.beginTransaction();
+        var order = orderRepository.findById(OrderTestIT.TEST_ORDER_ID_FOR_DELETE);
 
-        orderRepository.delete(OrderTestIT.TEST_ORDER_ID_FOR_DELETE);
+        order.ifPresent(or -> orderRepository.delete(or));
 
-        assertThat(session.find(Order.class, OrderTestIT.TEST_ORDER_ID_FOR_DELETE)).isNull();
+        assertThat(orderRepository.findById(OrderTestIT.TEST_ORDER_ID_FOR_DELETE)).isEmpty();
+
         session.getTransaction().rollback();
     }
 
@@ -101,49 +107,21 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     }
 
     @Test
-    void shouldReturnAllOrdersWithCriteria() {
-            session.beginTransaction();
-            List<Order> orders = orderRepository.findAllCriteria(session);
-
-            assertThat(orders).hasSize(2);
-
-            List<LocalDate> ordersData = orders.stream().map(Order::getDate).collect(toList());
-            assertThat(ordersData).contains(LocalDate.of(2023, 7, 1), LocalDate.of(2023, 7, 2));
-
-            List<String> carsNumber = orders.stream()
-                    .map(Order::getCar)
-                    .map(Car::getSerialNumber)
-                    .collect(toList());
-            assertThat(carsNumber).contains("0123456", "ABC12345678");
-            session.getTransaction().rollback();
-    }
-
-    @Test
     void shouldReturnAllOrdersWithQueryDsl() {
-            session.beginTransaction();
-            List<Order> orders = orderRepository.findAllQueryDsl(session);
+        session.beginTransaction();
+        List<Order> orders = orderRepository.findAllQueryDsl(session);
 
-            assertThat(orders).hasSize(2);
+        assertThat(orders).hasSize(2);
 
-            List<LocalDate> ordersData = orders.stream().map(Order::getDate).collect(toList());
-            assertThat(ordersData).contains(LocalDate.of(2023, 7, 1), LocalDate.of(2023, 7, 2));
+        List<LocalDate> ordersData = orders.stream().map(Order::getDate).collect(toList());
+        assertThat(ordersData).contains(LocalDate.of(2023, 7, 1), LocalDate.of(2023, 7, 2));
 
-            List<String> carsNumber = orders.stream()
-                    .map(Order::getCar)
-                    .map(Car::getSerialNumber)
-                    .collect(toList());
-            assertThat(carsNumber).contains("0123456", "ABC12345678");
-            session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnOrderByIdWithCriteria() {
-            session.beginTransaction();
-            Optional<Order> optionalOrder = orderRepository.findByIdCriteria(session, OrderTestIT.TEST_EXISTS_ORDER_ID);
-
-            assertThat(optionalOrder).isNotNull();
-            optionalOrder.ifPresent(order -> assertThat(order).isEqualTo(OrderTestIT.getExistOrder()));
-            session.getTransaction().rollback();
+        List<String> carsNumber = orders.stream()
+                .map(Order::getCar)
+                .map(Car::getSerialNumber)
+                .collect(toList());
+        assertThat(carsNumber).contains("0123456", "ABC12345678");
+        session.getTransaction().rollback();
     }
 
     @Test
@@ -156,25 +134,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
             session.getTransaction().rollback();
     }
 
-    @Test
-    void shouldReturnOrdersByCarNumberCriteria() {
-            session.beginTransaction();
-            List<Order> orders = orderRepository.findOrdersByCarNumberCriteria(session, "0123456");
 
-            assertThat(orders).hasSize(1);
-            assertThat(orders.get(0)).isEqualTo(OrderTestIT.getExistOrder());
-            session.getTransaction().rollback();
-    }
-
-    @Test
-    void shouldReturnOrdersOrderStatusCriteria() {
-            session.beginTransaction();
-            List<Order> orders = orderRepository.findOrdersByOrderStatusCriteria(session, OrderStatus.PAYED);
-
-            assertThat(orders).hasSize(1);
-            assertThat(orders.get(0)).isEqualTo(OrderTestIT.getExistOrder());
-            session.getTransaction().rollback();
-    }
 
     @Test
     void shouldReturnOrdersByBrandNameAndModelNameOrderByDateQueryDsl() {
