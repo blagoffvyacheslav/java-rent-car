@@ -14,21 +14,21 @@ import static com.dmdev.entity.QCar.car;
 @Repository
 public class CarRepository extends BaseRepository<Long, Car>{
 
-    public CarRepository(EntityManager entityManager) {
-        super(Car.class, entityManager);
+    public CarRepository() {
+        super(Car.class);
     }
 
 
-    public List<Car> findAllQueryDsl(Session session) {
-        return new JPAQuery<Car>(session)
+    public List<Car> findAllQueryDsl() {
+        return new JPAQuery<Car>(getEntityManager())
                 .select(car)
                 .from(car)
                 .fetch();
     }
 
 
-    public Optional<Car> findByIdQueryDsl(Session session, Long id) {
-        return Optional.ofNullable(new JPAQuery<Car>(session)
+    public Optional<Car> findByIdQueryDsl(Long id) {
+        return Optional.ofNullable(new JPAQuery<Car>(getEntityManager())
                 .select(car)
                 .from(car)
                 .where(car.id.eq(id))
