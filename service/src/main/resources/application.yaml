@@ -1,33 +1,17 @@
 spring:
-
   datasource:
-
-    url: jdbc:postgresql://localhost:5432/cartime
-
+    url: jdbc:postgresql://localhost:5433/cartime
     username: postgres
-
     password: pass
-
     driver-class-name: org.postgresql.Driver
-
   jpa:
-
     properties.hibernate:
-
       show_sql: true
-
       format_sql: true
-
       hbm2ddl.auto: update
-
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
-
       physical_naming_strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-
       default_schema: public
-
 logging:
-
   level:
-
     root: DEBUG

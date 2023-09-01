@@ -1,0 +1,21 @@
+<div th:fragment="nav">
+<nav>
+    <img th:src="@{/logo.jpeg}" alt="CarTime" width="125px" height="100px">
+    <ul>
+        <li><a href="#">Home</a></li>
+<!--        <li><a href="#">Settings</a></li>-->
+<!--        <li><a href="/users">Users</a></li>-->
+<!--        <li><a class="openModal" data-modal="modal1" href="#">Login</a></li>-->
+<!--        <li><a class="openModal" data-modal="modal2" href="#">Registration</a></li>-->
+        <div th:if="${session.user == null}" th:insert="layout/nav/nav-guest"></div>
+        <th:block th:unless="${session.user == null}" th:switch='${session.user.role.name()}'>
+            <th:block th:case='ADMIN'>
+                <div th:insert="layout/nav/nav-admin"></div>
+            </th:block>
+            <th:block th:case='CLIENT'>
+                <div th:insert="layout/nav/nav-user"></div>
+            </th:block>
+        </th:block>
+    </ul>
+</nav>
+</div>
