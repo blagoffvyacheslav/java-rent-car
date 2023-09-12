@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "order")
-@EqualsAndHashCode(exclude = "order")
+@EqualsAndHashCode(exclude = "order", callSuper = false)
 @Builder
-public class OrderDetails implements BaseEntity<Long>  {
+public class OrderDetails extends AuditingEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

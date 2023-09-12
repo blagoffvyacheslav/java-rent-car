@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "order")
-@EqualsAndHashCode(exclude = "order")
+@EqualsAndHashCode(exclude = "order", callSuper = false)
 @Builder
-public class Damage implements BaseEntity<Long> {
+public class Damage extends AuditingEntity<Long> {
 
         @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

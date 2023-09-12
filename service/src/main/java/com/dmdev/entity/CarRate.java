@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @ToString(exclude = "model")
 @EqualsAndHashCode(exclude = "model")
 @Builder
-public class CarRate implements BaseEntity<Long>  {
+public class CarRate implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

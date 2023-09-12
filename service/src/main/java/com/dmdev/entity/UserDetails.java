@@ -15,9 +15,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"user", "driverLicenses"})
-@EqualsAndHashCode(exclude = {"user", "driverLicenses"})
+@EqualsAndHashCode(exclude = {"user", "driverLicenses"}, callSuper = false)
 @Builder
-public class UserDetails implements BaseEntity<Long>  {
+public class UserDetails extends AuditingEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

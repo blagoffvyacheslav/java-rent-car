@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @ToString(exclude = "userDetails")
 @EqualsAndHashCode(of = "number")
 @Builder
-public class DriverLicense implements BaseEntity<Long>  {
+public class DriverLicense implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
