@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="common">
+    <style>
+        body {
+            font-family: "Georgia", serif;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #f8f9fa;
+            padding: 10px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            width: 200px; /* Adjust the width of the menu */
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav li {
+            margin-bottom: 10px;
+        }
+        nav a {
+            color: #292b2c;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #007bff;
+        }
+        main {
+            margin-left: 220px; /* Account for the menu width */
+            padding: 40px;
+            text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            display: block;
+            margin-left: auto;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .closeModal {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .closeModal:hover {
+            background-color: #0056b3;
+        }
+        .modal-content {
+            max-height: 70vh; /* Максимальная высота контента */
+            overflow-y: auto; /* Добавляет вертикальную прокрутку при необходимости */
+        }
+
+        .modal-inner-content {
+            padding: 20px; /* Отступы внутри контейнера */
+        }
+        body {
+            font-family: "Georgia", serif;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #f8f9fa;
+            padding: 10px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            width: 200px; /* Adjust the width of the menu */
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav li {
+            margin-bottom: 10px;
+        }
+        nav a {
+            color: #292b2c;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #007bff;
+        }
+        main {
+            margin-left: 220px; /* Account for the menu width */
+            padding: 40px;
+            text-align: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            display: block;
+            margin-left: auto;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .closeModal {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .closeModal:hover {
+            background-color: #0056b3;
+        }
+        .modal-content {
+            max-height: 70vh; /* Максимальная высота контента */
+            overflow-y: auto; /* Добавляет вертикальную прокрутку при необходимости */
+        }
+
+        .modal-inner-content {
+            padding: 20px; /* Отступы внутри контейнера */
+            /* Стили для таблицы */
+            .table {
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #ccc;
+            }
+
+            .table th, .table td {
+                padding: 8px;
+                border: 1px solid #ccc;
+            }
+
+            .table th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }
+
+            /* Прокрутка таблицы, если она длинная */
+            .modal-inner-content {
+                max-height: 400px; /* Максимальная высота контента */
+                overflow-y: auto; /* Вертикальная прокрутка при необходимости */
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+
+    <th:block th:replace="${scripts} ?: ~{}"/>
+</head>
+<script th:fragment="modal">
+    document.querySelectorAll('.openModal').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const modalId = event.target.getAttribute('data-modal');
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'block';
+        });
+    });
+
+    document.querySelectorAll('.closeModal').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const modalId = event.target.getAttribute('data-modal');
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        });
+    });
+</script>
