@@ -6,13 +6,12 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserDetailsRepository extends JpaRepository<UserDetails, Long>, QuerydslPredicateExecutor<UserDetails> {
 
-    Optional<UserDetails> findByUserId(Long userId);
+    UserDetails findByUserId(Long userId);
 
-    List<UserDetails> findAllByNameContainingIgnoreCaseAndLastnameContainingIgnoreCase(String name, String lastName);
+    List<UserDetails> findAllByNameContainingIgnoreCaseAndLastnameContainingIgnoreCase(String name, String lastname);
 
     List<UserDetails> findByRegistrationDate(LocalDate registrationDate);
 

@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/cartime
-    username: postgres
+    url: jdbc:postgresql://localhost:5432/cartime
+    username: blagoff__
     password: pass
     driver-class-name: org.postgresql.Driver
   jpa:

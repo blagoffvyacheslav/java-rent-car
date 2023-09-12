@@ -10,10 +10,16 @@ import java.time.LocalDate;
 @Builder
 public class UserDetailsReadDto {
 
-    @NotEmpty Long id;
+    @NotEmpty
+    Long id;
+
+    @NotEmpty
+    Long userId;
+
     String name;
     String lastname;
     String address;
     String phone;
     LocalDate birthday;
+    LocalDate registrationAt;
 }

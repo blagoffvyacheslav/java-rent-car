@@ -1,12 +1,10 @@
 package integration.com.dmdev.repository;
 
 
-import com.dmdev.entity.Order;
 import com.dmdev.entity.OrderDetails;
 import com.dmdev.repository.OrderDetailsRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.entity.OrderDetailsTestIT;
-import integration.com.dmdev.entity.OrderTestIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

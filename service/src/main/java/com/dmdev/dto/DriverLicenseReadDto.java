@@ -12,7 +12,11 @@ public class DriverLicenseReadDto {
 
     @NotEmpty
     Long id;
-    String driverLicenseNumber;
-    LocalDate driverLicenseIssueDate;
-    LocalDate driverLicenseExpiredDate;
+
+    @NotEmpty
+    Long userId;
+
+    String licenseNumber;
+    LocalDate issueDate;
+    LocalDate expiredDate;
 }

@@ -1,7 +1,6 @@
 package com.dmdev.mapper;
 
 import com.dmdev.dto.UserCreateDto;
-import com.dmdev.entity.Role;
 import com.dmdev.entity.User;
 import com.dmdev.utils.PasswordUtil;
 import lombok.RequiredArgsConstructor;
@@ -11,17 +10,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserCreateMapper implements Mapper<UserCreateDto, User> {
 
-    private final UserDetailsCreateMapper userDetailsCreateMapper;
-    private final DriverLicenseCreateMapper driverLicenseCreateMapper;
+    private final UserDetailsFromUserCreateMapper userDetailsCreateMapper;
+    private final DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
+
     @Override
-    public User map(UserCreateDto createDto) {
-        var driverLicense = driverLicenseCreateMapper.map(createDto);
-        var userDetails = userDetailsCreateMapper.map(createDto);
+    public User map(UserCreateDto requestDto) {
+        var driverLicense = driverLicenseCreateMapper.map(requestDto);
+        var userDetails = userDetailsCreateMapper.map(requestDto);
+        userDetails.setPassportNumber(requestDto.getPassportNumber());
         var user = User.builder()
-                .login(createDto.getLogin())
-                .email(createDto.getEmail())
-                .role(createDto.getRole())
-                .password(PasswordUtil.hashPassword(createDto.getPassword()))
+                .username(requestDto.getUsername())
+                .email(requestDto.getEmail())
+                .role(requestDto.getRole())
+                .password(PasswordUtil.hashPassword(requestDto.getPassword()))
                 .build();
         userDetails.setUser(user);
         userDetails.setDriverLicense(driverLicense);

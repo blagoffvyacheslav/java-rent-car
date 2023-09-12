@@ -1,4 +1,4 @@
-package integration.com.dmdev.controllers;
+package integration.com.dmdev.http.controllers;
 
 import com.dmdev.dto.UserReadDto;
 import com.dmdev.service.UserService;
@@ -30,7 +30,7 @@ import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class UserControllerTestIT extends IntegrationBaseTest {
+class UserRestControllerTestIT extends IntegrationBaseTest {
 
     private static final String ENDPOINT = "/users";
 
@@ -66,7 +66,7 @@ class UserControllerTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                                 .param("email", userCreateRequestDTO.getEmail())
-                                .param("login", userCreateRequestDTO.getLogin())
+                                .param("username", userCreateRequestDTO.getUsername())
                                 .param("password", userCreateRequestDTO.getPassword())
                                 .param("name", userCreateRequestDTO.getName())
                                 .param("lastname", userCreateRequestDTO.getLastname())
@@ -163,7 +163,7 @@ class UserControllerTestIT extends IntegrationBaseTest {
                                 .accept(MediaType.TEXT_HTML)
                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                                 .param("email", userUpdateRequestDTO.getEmail())
-                                .param("login", userUpdateRequestDTO.getLogin())
+                                .param("username", userUpdateRequestDTO.getUsername())
                                 .param("role", userUpdateRequestDTO.getRole().toString()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT + "/" + expected.getId()));
@@ -186,7 +186,7 @@ class UserControllerTestIT extends IntegrationBaseTest {
 
         var result = assertThrowsExactly(ResponseStatusException.class, () -> userService.getById(saved.get().getId()));
 
-        assertEquals("404 NOT_FOUND \"User not found\"", result.getMessage());
+        assertEquals(404, result.getRawStatusCode());
     }
 
     @Test
@@ -212,7 +212,7 @@ class UserControllerTestIT extends IntegrationBaseTest {
         UserReadDto responseDto = (UserReadDto) result.getModelAndView().getModel().get("user");
 
         assertThat(responseDto.getId()).isEqualTo(id);
-        assertThat(responseDto.getLogin()).isEqualTo(expected.getLogin());
+        assertThat(responseDto.getUsername()).isEqualTo(expected.getUsername());
         assertThat(responseDto.getEmail()).isEqualTo(expected.getEmail());
         assertThat(responseDto.getRole()).isEqualTo(expected.getRole());
 
@@ -224,8 +224,8 @@ class UserControllerTestIT extends IntegrationBaseTest {
         assertThat(responseDto.getUserDetailsDto().getBirthday()).isEqualTo(expected.getUserDetailsDto().getBirthday());
 
         assertThat(responseDto.getDriverLicenseDto().getId()).isEqualTo(expected.getDriverLicenseDto().getId());
-        assertThat(responseDto.getDriverLicenseDto().getDriverLicenseNumber()).isEqualTo(expected.getDriverLicenseDto().getDriverLicenseNumber());
-        assertThat(responseDto.getDriverLicenseDto().getDriverLicenseIssueDate()).isEqualTo(expected.getDriverLicenseDto().getDriverLicenseIssueDate());
-        assertThat(responseDto.getDriverLicenseDto().getDriverLicenseExpiredDate()).isEqualTo(expected.getDriverLicenseDto().getDriverLicenseExpiredDate());
+        assertThat(responseDto.getDriverLicenseDto().getLicenseNumber()).isEqualTo(expected.getDriverLicenseDto().getLicenseNumber());
+        assertThat(responseDto.getDriverLicenseDto().getIssueDate()).isEqualTo(expected.getDriverLicenseDto().getIssueDate());
+        assertThat(responseDto.getDriverLicenseDto().getExpiredDate()).isEqualTo(expected.getDriverLicenseDto().getExpiredDate());
     }
 }

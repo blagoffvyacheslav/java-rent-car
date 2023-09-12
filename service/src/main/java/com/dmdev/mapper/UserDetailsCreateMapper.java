@@ -1,22 +1,25 @@
 package com.dmdev.mapper;
 
-import com.dmdev.dto.UserCreateDto;
+import com.dmdev.dto.UserDetailsCreateDto;
+import com.dmdev.entity.User;
 import com.dmdev.entity.UserDetails;
 import org.springframework.stereotype.Component;
 
 
 @Component
-public class UserDetailsCreateMapper implements Mapper<UserCreateDto, UserDetails> {
+public class UserDetailsCreateMapper implements Mapper<UserDetailsCreateDto, UserDetails> {
 
     @Override
-    public UserDetails map(UserCreateDto createDto) {
+    public UserDetails map(UserDetailsCreateDto requestDto) {
         return UserDetails.builder()
-                .name(createDto.getName())
-                .lastname(createDto.getLastname())
-                .phone(createDto.getPhone())
-                .passportNumber(createDto.getPassportNumber())
-                .address(createDto.getAddress())
-                .birthday(createDto.getBirthday())
+                .user(User.builder()
+                        .id(requestDto.getUserId())
+                        .build())
+                .name(requestDto.getName())
+                .lastname(requestDto.getLastname())
+                .address(requestDto.getAddress())
+                .phone(requestDto.getPhone())
+                .birthday(requestDto.getBirthday())
                 .build();
     }
 }

@@ -4,18 +4,15 @@ import com.dmdev.entity.*;
 import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.OrderRepository;
 import com.dmdev.repository.UserRepository;
-import com.querydsl.core.Tuple;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.entity.CarTestIT;
 import integration.com.dmdev.entity.OrderDetailsTestIT;
 import integration.com.dmdev.entity.OrderTestIT;
 import integration.com.dmdev.entity.UserTestIT;
-import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

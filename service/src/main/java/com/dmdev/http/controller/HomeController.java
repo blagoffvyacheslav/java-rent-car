@@ -1,4 +1,4 @@
-package com.dmdev.controllers;
+package com.dmdev.http.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

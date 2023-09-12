@@ -1,4 +1,4 @@
-package integration.com.dmdev.controllers;
+package integration.com.dmdev.http.controllers;
 
 import integration.com.dmdev.IntegrationBaseTest;
 import lombok.RequiredArgsConstructor;

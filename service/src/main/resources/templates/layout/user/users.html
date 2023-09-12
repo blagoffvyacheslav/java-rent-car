@@ -23,10 +23,10 @@
                 <thead>
                 <tr>
                   <th scope="col" hidden>id</th>
-                  <th scope="col">Login</th>
+                  <th scope="col">Username</th>
                   <th scope="col">Email</th>
                   <th scope="col">Name</th>
-                  <th scope="col">Surname</th>
+                  <th scope="col">Lastname</th>
                   <th scope="col">Address</th>
                   <th scope="col">Phone</th>
                   <th scope="col">Birthday</th>
@@ -39,7 +39,7 @@
                     th:style="${iStat.odd}? 'font-weight: bold;'"
                     th:alt-title="${iStat.even}? 'even' : 'odd'">
                   <td hidden th:text="${user.id}"></td>
-                  <td th:text="${user.login}"></td>
+                  <td th:text="${user.username}"></td>
                   <td th:text="${user.email}"></td>
                   <td th:text="${user.userDetailsDto.name}"></td>
                   <td th:text="${user.userDetailsDto.lastname}"></td>
