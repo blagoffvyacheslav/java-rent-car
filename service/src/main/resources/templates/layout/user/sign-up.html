@@ -12,9 +12,9 @@
                 <h2 class="text-center">Sign up</h2>
                 <form id="sign-up-form" th:action="@{/users}" method="post" modelAttribute="registration" th:fragment="sign-up">
                     <div class="form-group">
-                        <label class="col-form-label" for="sign-up-login-input">Login:</label>
-                        <input type="text" class="form-control" id="sign-up-login-input" name="login" required/>
-                        <small class="text-danger" id="sign-up-login-error-small"></small>
+                        <label class="col-form-label" for="sign-up-username-input">Username:</label>
+                        <input type="text" class="form-control" id="sign-up-username-input" name="username" required/>
+                        <small class="text-danger" id="sign-up-username-error-small"></small>
                     </div>
                     <div class="form-group">
                         <label class="col-form-label" for="sign-up-first-name-input">Name:</label>

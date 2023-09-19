@@ -1,16 +1,11 @@
 package integration.com.dmdev.entity;
 
-import com.dmdev.entity.User;
 import com.dmdev.entity.UserDetails;
 import integration.com.dmdev.IntegrationBaseTest;
-import org.hibernate.Session;
-import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static integration.com.dmdev.entity.UserTestIT.getExistUser;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserDetailsTestIT extends IntegrationBaseTest {
 
@@ -20,6 +15,7 @@ public class UserDetailsTestIT extends IntegrationBaseTest {
     public static UserDetails getExistUserDetails() {
         return UserDetails.builder()
                 .user(getExistUser())
+                .id(TEST_EXISTS_USER_DETAILS_ID)
                 .name("Vyacheslav")
                 .lastname("Blagov")
                 .address("17 Lenin st")
@@ -27,6 +23,18 @@ public class UserDetailsTestIT extends IntegrationBaseTest {
                 .phone("+1 720 123 45 67")
                 .birthday(LocalDate.of(1994, 12, 5))
                 .registrationDate(LocalDate.of(2023, 7, 3))
+                .build();
+    }
+
+    public static UserDetails createUserDetails() {
+        return UserDetails.builder()
+                .name("Semen")
+                .lastname("Kobelev")
+                .address("Moscow")
+                .phone("+74953292540")
+                .birthday(LocalDate.of(1995, 10, 4))
+                .registrationDate(LocalDate.of(2022, 9, 22))
+                .passportNumber("0000000")
                 .build();
     }
 }

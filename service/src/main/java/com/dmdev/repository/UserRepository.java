@@ -2,6 +2,8 @@ package com.dmdev.repository;
 
 import com.dmdev.entity.User;
 import com.dmdev.entity.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,9 +16,11 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredicateExecutor<User> {
 
+    Optional<User> findByUsernameAndPassword(String username, String password);
+
     Optional<User> findByEmailAndPassword(String email, String password);
 
-    boolean existsByEmailAndPassword(String email, String password);
+    boolean existsByUsernameAndPassword(String email, String password);
 
     Optional<User> findByEmail(String email);
 
@@ -24,13 +28,19 @@ public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredi
 
     boolean existsByEmail(String email);
 
-    boolean existsByLogin(String login);
+    boolean existsByUsername(String username);
 
     @Query(value = "SELECT u " +
             "FROM User u " +
             "JOIN fetch u.userDetails ud " +
             "WHERE ud.registrationDate  = :registrationDate")
     List<User> findAllByRegistrationDate(@Param("registrationDate") LocalDate registrationDate);
+
+    @Query(value = "SELECT u " +
+            "FROM User u " +
+            "JOIN fetch u.userDetails ud " +
+            "WHERE ud.phone  = :phone")
+    Optional<User> findByPhone(@Param("phone") String phone);
 
     @EntityGraph(attributePaths = {"orders"})
     @Query(value = "SELECT u " +
@@ -43,4 +53,11 @@ public interface UserRepository extends JpaRepository<User, Long>, QuerydslPredi
             "FROM User u " +
             "WHERE u.orders.size = 0")
     List<User> findAllWithoutOrders();
+
+    @Query(value = "SELECT u " +
+            "FROM User u " +
+            "JOIN u.userDetails ud " +
+            "JOIN ud.driverLicenses dl " +
+            "WHERE dl.expiredDate  < :driverLicenseExpiredDate")
+    Page<User> findAllWithExpiredDriverLicense(@Param("driverLicenseExpiredDate") LocalDate driverLicenseExpiredDate, Pageable pageable);
 }

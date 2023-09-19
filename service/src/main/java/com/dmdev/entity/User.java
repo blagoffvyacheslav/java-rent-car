@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"userDetails", "orders"})
-@EqualsAndHashCode(of = {"login", "email"}, callSuper = false)
+@EqualsAndHashCode(of = {"username", "email"}, callSuper = false)
 @Builder
 @Table(name = "users")
 public class User extends AuditingEntity<Long> {
@@ -22,9 +22,8 @@ public class User extends AuditingEntity<Long> {
     @Column(name = "id", unique = true)
     private Long id;
 
-    @NotNull
     @Column(nullable = false, unique = true)
-    private String login;
+    private String username;
 
     @NotNull
     @Column(nullable = false, unique = true)

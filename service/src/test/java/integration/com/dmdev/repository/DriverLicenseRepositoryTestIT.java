@@ -5,6 +5,7 @@ import com.dmdev.repository.DriverLicenseRepository;
 import com.dmdev.repository.UserDetailsRepository;
 import integration.com.dmdev.IntegrationBaseTest;
 import integration.com.dmdev.entity.DriverLicenseTestIT;
+import integration.com.dmdev.entity.UserDetailsTestIT;
 import integration.com.dmdev.entity.UserTestIT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
@@ -28,7 +28,7 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldSaveDriverLicense() {
-        var userDetails = userDetailsRepository.findById(DriverLicenseTestIT.TEST_EXISTS_USER_DETAILS_ID).get();
+        var userDetails = userDetailsRepository.findById(UserDetailsTestIT.TEST_EXISTS_USER_DETAILS_ID).get();
 
         var driverLicenceToSave = DriverLicenseTestIT.createDriverLicense();
         userDetails.setDriverLicense(driverLicenceToSave);
@@ -84,11 +84,11 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDriverLicenseByNumber() {
-        var optionalDriverLicense = driverLicenseRepository.findByNumberContainingIgnoreCase("Ab12346");
+        var driverLicenses = driverLicenseRepository.findByNumberContainingIgnoreCase("12345BD");
 
-        assertThat(optionalDriverLicense).isNotNull();
-        optionalDriverLicense.ifPresent(driverLicense -> assertThat(driverLicense.getId()).isEqualTo(DriverLicenseTestIT.getExistDriverLicense().getId()));
-        assertThat(optionalDriverLicense).isEqualTo(Optional.of(DriverLicenseTestIT.getExistDriverLicense()));
+        assertThat(driverLicenses).hasSize(1);
+        assertThat(driverLicenses.get(0).getId()).isEqualTo(DriverLicenseTestIT.getExistDriverLicense().getId());
+        assertThat(driverLicenses.get(0)).isEqualTo(DriverLicenseTestIT.getExistDriverLicense());
     }
 
     @Test
@@ -100,12 +100,8 @@ class DriverLicenseRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDriverLicenseByUserId() {
-        Optional<DriverLicense> driverLicense = driverLicenseRepository.findByUserId(UserTestIT.TEST_EXISTS_USER_ID);
-
-        assertTrue(driverLicense.isPresent());
-
-        driverLicense.ifPresent(
-                dl -> assertEquals(dl, DriverLicenseTestIT.getExistDriverLicense())
-        );
+        List<DriverLicense> driverLicenses = driverLicenseRepository.findByUserId(UserTestIT.TEST_EXISTS_USER_ID);
+        assertThat(driverLicenses).hasSize(1);
+        assertEquals(driverLicenses.get(0), DriverLicenseTestIT.getExistDriverLicense());
     }
 }

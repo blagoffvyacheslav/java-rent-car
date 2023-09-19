@@ -1,14 +1,9 @@
 package integration.com.dmdev.entity;
 
 import com.dmdev.entity.Car;
-import com.dmdev.entity.Model;
 import integration.com.dmdev.IntegrationBaseTest;
-import org.hibernate.Session;
-import org.junit.jupiter.api.Test;
 
 import static integration.com.dmdev.entity.ModelTestIT.getExistModel;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CarTestIT extends IntegrationBaseTest {
 
@@ -17,13 +12,12 @@ public class CarTestIT extends IntegrationBaseTest {
 
     public static Car getExistCar() {
         return Car.builder()
-                .id(2L)
+                .id(TEST_EXISTS_CAR_ID)
                 .model(getExistModel())
                 .serialNumber("ABC12345678")
                 .isNew(false)
                 .build();
     }
-
 
     public static Car createCar() {
         return Car.builder()

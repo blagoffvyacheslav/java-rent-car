@@ -1,18 +1,19 @@
-package com.dmdev.controllers;
+package com.dmdev.http.controller;
 
-
+import com.dmdev.dto.UserFilterDto;
 import com.dmdev.dto.LoginDto;
 import com.dmdev.dto.UserChangePasswordDto;
 import com.dmdev.dto.UserCreateDto;
 import com.dmdev.dto.UserUpdateDto;
-import com.dmdev.dto.UserReadDto;
 import com.dmdev.entity.Role;
 import com.dmdev.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 
 @Controller
 @RequestMapping(path = "/users")
@@ -33,7 +35,12 @@ public class UserController {
     private final UserService userService;
     @PostMapping()
     public String create(@ModelAttribute("registration") UserCreateDto userCreateDto,
+                         BindingResult bindingResult,
                          RedirectAttributes redirectedAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectedAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+            return "redirect:/home";
+        }
         return userService.create(userCreateDto)
                 .map(user -> {
                     redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "Your registration was successfully. Please login");
@@ -90,12 +97,23 @@ public class UserController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, (String.format("Password have not been changed. Please check if old password is correct"))));
     }
 
+    @PostMapping("/{id}/change-role")
+    public String changeRole(@PathVariable("id") Long id,
+                             @PathParam(value = "role") Role role) {
+        return userService.changeRole(id, role)
+                .map(result -> "redirect:/users")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+    }
+
     @GetMapping()
     public String findAll(Model model,
+                          @ModelAttribute @Nullable UserFilterDto userFilterDto,
                           @RequestParam(required = false, defaultValue = "1") Integer page,
                           @RequestParam(required = false, defaultValue = "20") Integer size) {
-        Page<UserReadDto> usersPage = userService.getAll(page - 1, size);
+        var usersPage = userService.getAll(userFilterDto, page - 1, size);
         model.addAttribute("usersPage", usersPage);
+        model.addAttribute("filter", userFilterDto);
+        model.addAttribute("roles", Role.values());
 
         return "layout/user/users";
     }

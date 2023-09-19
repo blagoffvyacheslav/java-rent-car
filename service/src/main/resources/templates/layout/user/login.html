@@ -5,8 +5,8 @@
             <h2 class="text-center">Login</h2>
             <form id="sign-in-form" th:action="@{/users/login}" method="post" th:fragment="sign-in">
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" name="email" class="form-control" pattern="[\w-\.]+@([\w-]+\.)+[\w-]{2,4}" maxlength="40" required>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password:</label>

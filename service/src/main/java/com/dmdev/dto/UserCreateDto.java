@@ -7,49 +7,52 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Value
 public class UserCreateDto {
 
-    @NotEmpty
+    @NotBlank(message = "Email is mandatory")
     @Email
     String email;
 
-    @NotEmpty
-    @Size(min = 2, message = "Login should have at least 2 characters")
-    String login;
+    @NotBlank(message = "Username is mandatory")
+    @Size(min = 2, message = "Username should have at least 2 characters")
+    String username;
 
     @NotEmpty
     @Size(min = 8, message = "Password should have at least 8 characters")
+    @Pattern(regexp = "(?=^.{6,40}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$", message = "Password should have at least 8 characters")
     String password;
 
-    @NotEmpty
+    @NotBlank(message = "Name is required")
     String name;
 
-    @NotEmpty
+    @NotBlank(message = "Lastname is required")
     String lastname;
 
-    @NotEmpty
+    @NotBlank(message = "Address is required")
     String address;
 
-    @NotEmpty
+    @NotBlank(message = "Phone is required")
     String phone;
 
-    @NotEmpty
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate birthday;
 
-    @NotBlank(message = "Driver license number is mandatory")
+    @NotBlank(message = "Driver license number is required")
     @Size(min = 4, message = "Driver license number should have at least 2 characters")
     String driverLicenseNumber;
 
-    @NotEmpty
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate driverLicenseIssueDate;
 
-    @NotEmpty
+    @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate driverLicenseExpiredDate;
 

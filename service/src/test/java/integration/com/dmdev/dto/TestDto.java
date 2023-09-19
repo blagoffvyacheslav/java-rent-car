@@ -21,7 +21,7 @@ public class TestDto {
                 "test",
                 "Test",
                 "Testov",
-                "Testino",
+                "21 Lebedyanskya st",
                 "+79053243424",
                 LocalDate.of(2000, 10, 10),
                 "0000000",
@@ -48,7 +48,7 @@ public class TestDto {
     public static UserReadDto getUserReadDto() {
         return UserReadDto.builder()
                 .email("test@testov.com")
-                .login("test")
+                .username("test")
                 .userDetailsDto(UserDetailsReadDto.builder()
                         .name("Test")
                         .lastname("Testov")
@@ -57,9 +57,9 @@ public class TestDto {
                         .birthday(LocalDate.of(2000, 10, 10))
                         .build())
                 .driverLicenseDto(DriverLicenseReadDto.builder()
-                        .driverLicenseNumber("0000000")
-                        .driverLicenseIssueDate(LocalDate.of(2020, 10, 10))
-                        .driverLicenseExpiredDate(LocalDate.of(2030, 10, 10))
+                        .licenseNumber("0000000")
+                        .issueDate(LocalDate.of(2020, 10, 10))
+                        .expiredDate(LocalDate.of(2030, 10, 10))
                         .build())
                 .build();
     }

@@ -2,20 +2,11 @@ package integration.com.dmdev.entity;
 
 import com.dmdev.entity.*;
 import integration.com.dmdev.IntegrationBaseTest;
-import org.hibernate.Session;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-import static integration.com.dmdev.entity.CarTestIT.TEST_EXISTS_CAR_ID;
 import static integration.com.dmdev.entity.CarTestIT.getExistCar;
-import static integration.com.dmdev.entity.OrderDetailsTestIT.createOrderDetails;
-import static integration.com.dmdev.entity.UserTestIT.TEST_EXISTS_USER_ID;
 import static integration.com.dmdev.entity.UserTestIT.getExistUser;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OrderTestIT extends IntegrationBaseTest {
 
@@ -24,7 +15,7 @@ public class OrderTestIT extends IntegrationBaseTest {
 
     public static Order getExistOrder() {
         return Order.builder()
-                .id(2l)
+                .id(TEST_EXISTS_ORDER_ID)
                 .date(LocalDate.of(2023, 7, 2))
                 .user(getExistUser())
                 .car(getExistCar())
@@ -33,7 +24,6 @@ public class OrderTestIT extends IntegrationBaseTest {
                 .amount(BigDecimal.valueOf(10000.00).setScale(2))
                 .build();
     }
-
 
     public static Order createOrder() {
         return Order.builder()

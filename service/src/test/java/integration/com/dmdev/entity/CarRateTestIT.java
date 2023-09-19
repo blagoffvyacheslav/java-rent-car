@@ -3,14 +3,9 @@ package integration.com.dmdev.entity;
 import com.dmdev.entity.CarRate;
 import com.dmdev.entity.Term;
 import integration.com.dmdev.IntegrationBaseTest;
-import org.hibernate.Session;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 
 import static integration.com.dmdev.entity.ModelTestIT.getExistModel;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CarRateTestIT extends IntegrationBaseTest {
 
@@ -19,7 +14,7 @@ public class CarRateTestIT extends IntegrationBaseTest {
 
     public static CarRate getExistCarRate() {
         return CarRate.builder()
-                .id(2L)
+                .id(TEST_EXISTS_CAR_RATE_ID)
                 .price(BigDecimal.valueOf(10000.00))
                 .term(Term.HOURS)
                 .build();

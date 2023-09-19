@@ -1,16 +1,10 @@
 package integration.com.dmdev.entity;
 
-import com.dmdev.entity.Order;
 import com.dmdev.entity.OrderDetails;
 import integration.com.dmdev.IntegrationBaseTest;
-import org.hibernate.Session;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
 
 import static integration.com.dmdev.entity.OrderTestIT.getExistOrder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OrderDetailsTestIT extends IntegrationBaseTest {
 
@@ -19,7 +13,7 @@ public class OrderDetailsTestIT extends IntegrationBaseTest {
 
     public static OrderDetails getExistOrderDetails() {
         return OrderDetails.builder()
-                .id(2L)
+                .id(TEST_EXISTS_ORDER_DETAILS_ID)
                 .order(getExistOrder())
                 .startDate(LocalDateTime.of(2023, 7, 10, 0, 0))
                 .endDate(LocalDateTime.of(2023, 7, 11, 23, 59))

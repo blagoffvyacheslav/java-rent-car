@@ -4,19 +4,19 @@ import com.dmdev.entity.Role;
 import lombok.Value;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Value
 public class UserUpdateDto {
 
-    @NotEmpty
+    @NotBlank(message = "Email is required")
     @Email
     String email;
 
-    @NotEmpty
-    @Size(min = 2, message = "Login should have at least 2 characters")
-    String login;
+    @NotBlank(message = "Username is required")
+    @Size(min = 2, message = "Username should have at least 2 characters")
+    String username;
 
     Role role;
 }
