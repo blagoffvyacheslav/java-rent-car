@@ -4,12 +4,7 @@ import com.dmdev.entity.Role;
 import lombok.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Value
@@ -23,7 +18,7 @@ public class UserCreateDto {
     @Size(min = 2, message = "Username should have at least 2 characters")
     String username;
 
-    @NotEmpty
+    @NotBlank
     @Size(min = 8, message = "Password should have at least 8 characters")
     @Pattern(regexp = "(?=^.{6,40}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$", message = "Password should have at least 8 characters")
     String password;
@@ -40,7 +35,7 @@ public class UserCreateDto {
     @NotBlank(message = "Phone is required")
     String phone;
 
-    @NotNull
+    @Past
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate birthday;
 
@@ -48,11 +43,11 @@ public class UserCreateDto {
     @Size(min = 4, message = "Driver license number should have at least 2 characters")
     String driverLicenseNumber;
 
-    @NotNull
+    @Past
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate driverLicenseIssueDate;
 
-    @NotNull
+    @Past
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate driverLicenseExpiredDate;
 

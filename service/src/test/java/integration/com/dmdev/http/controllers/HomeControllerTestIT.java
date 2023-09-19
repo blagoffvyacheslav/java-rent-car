@@ -24,7 +24,6 @@ class HomeControllerTestIT extends IntegrationBaseTest {
     @Test
     void shouldRedirectToCorrectPage() throws Exception {
         final UriComponentsBuilder uriBuilder = fromUriString("/home");
-
         mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)

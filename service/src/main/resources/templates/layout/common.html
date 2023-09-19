@@ -54,6 +54,13 @@
         button:hover {
             background-color: #0056b3;
         }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
         .modal {
             display: none;
             position: fixed;
@@ -217,21 +224,3 @@
 
     <th:block th:replace="${scripts} ?: ~{}"/>
 </head>
-<script th:fragment="modal">
-    document.querySelectorAll('.openModal').forEach(link => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            const modalId = event.target.getAttribute('data-modal');
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'block';
-        });
-    });
-
-    document.querySelectorAll('.closeModal').forEach(button => {
-        button.addEventListener('click', (event) => {
-            const modalId = event.target.getAttribute('data-modal');
-            const modal = document.getElementById(modalId);
-            modal.style.display = 'none';
-        });
-    });
-</script>

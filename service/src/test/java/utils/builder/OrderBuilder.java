@@ -1,14 +1,13 @@
-package integration.com.dmdev.entity;
+package utils.builder;
 
 import com.dmdev.entity.*;
-import integration.com.dmdev.IntegrationBaseTest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static integration.com.dmdev.entity.CarTestIT.getExistCar;
-import static integration.com.dmdev.entity.UserTestIT.getExistUser;
+import static utils.builder.CarBuilder.getExistCar;
+import static utils.builder.UserBuilder.getExistUser;
 
-public class OrderTestIT extends IntegrationBaseTest {
+public class OrderBuilder {
 
     public static final Long TEST_EXISTS_ORDER_ID = 2L;
     public static final Long TEST_ORDER_ID_FOR_DELETE = 1L;

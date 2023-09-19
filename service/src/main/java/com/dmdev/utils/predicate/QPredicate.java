@@ -1,4 +1,4 @@
-package com.dmdev.utils;
+package com.dmdev.utils.predicate;
 
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
@@ -42,7 +42,6 @@ public class QPredicate {
     }
 
     public Predicate buildAnd() {
-
         return Optional.ofNullable(ExpressionUtils.allOf(predicates)).orElseGet(() -> Expressions.asBoolean(true).isTrue());
     }
 

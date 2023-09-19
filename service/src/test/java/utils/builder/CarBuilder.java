@@ -1,11 +1,10 @@
-package integration.com.dmdev.entity;
+package utils.builder;
 
 import com.dmdev.entity.Car;
-import integration.com.dmdev.IntegrationBaseTest;
 
-import static integration.com.dmdev.entity.ModelTestIT.getExistModel;
+import static utils.builder.ModelBuilder.getExistModel;
 
-public class CarTestIT extends IntegrationBaseTest {
+public class CarBuilder {
 
     public static final Long TEST_EXISTS_CAR_ID = 2L;
     public static final Long TEST_CAR_ID_FOR_DELETE = 1L;

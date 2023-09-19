@@ -2,8 +2,8 @@ package com.dmdev.mapper;
 
 import com.dmdev.dto.UserCreateDto;
 import com.dmdev.entity.User;
-import com.dmdev.utils.PasswordUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,6 +12,7 @@ public class UserCreateMapper implements Mapper<UserCreateDto, User> {
 
     private final UserDetailsFromUserCreateMapper userDetailsCreateMapper;
     private final DriverLicenseFromUserCreateMapper driverLicenseCreateMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User map(UserCreateDto requestDto) {
@@ -22,8 +23,7 @@ public class UserCreateMapper implements Mapper<UserCreateDto, User> {
                 .username(requestDto.getUsername())
                 .email(requestDto.getEmail())
                 .role(requestDto.getRole())
-                .password(PasswordUtil.hashPassword(requestDto.getPassword()))
-                .build();
+                .password(passwordEncoder.encode(requestDto.getPassword()))                .build();
         userDetails.setUser(user);
         userDetails.setDriverLicense(driverLicense);
         return user;

@@ -3,7 +3,11 @@ package com.dmdev.http.controller;
 import com.dmdev.dto.DriverLicenseCreateDto;
 import com.dmdev.dto.DriverLicenseUpdateDto;
 import com.dmdev.service.DriverLicenseService;
+
+import com.dmdev.service.exception.BadRequestException;
+import com.dmdev.service.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -17,13 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping(path = "/driver-licenses")
 @RequiredArgsConstructor
 public class DriverLicenseController {
 
     private static final String SUCCESS_ATTRIBUTE = "success_message";
-
     private final DriverLicenseService driverLicenseService;
 
     @PostMapping()
@@ -33,25 +38,25 @@ public class DriverLicenseController {
                 .map(driverLicense -> {
                     redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "You create driver license successfully.");
                     return "redirect:/users/" + driverLicense.getUserId();
-                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+                }).orElseThrow(() -> new BadRequestException("It's impossible to update driver license"));
     }
 
     @PostMapping("/{id}/update")
     public String update(@PathVariable("id") Long id,
                          @ModelAttribute DriverLicenseUpdateDto requestDto) {
-        return driverLicenseService.update(id, requestDto)
+        return Optional.of(driverLicenseService.update(id, requestDto))
                 .map(driverLicense -> "redirect:/users/" + driverLicense.getUserId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.prepare("Driver license", "id", id)));
     }
 
     @GetMapping("/{id}")
     public String findById(@PathVariable("id") Long id, Model model) {
-        return driverLicenseService.getById(id)
+        return Optional.of(driverLicenseService.getById(id))
                 .map(driverLicense -> {
                     model.addAttribute("driverLicense", driverLicense);
                     return "layout/user/driver-license";
                 })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.prepare("Driver license", "id", id)));
     }
 
     @GetMapping("/by-user-id")
@@ -61,7 +66,7 @@ public class DriverLicenseController {
                     model.addAttribute("driverLicense", driverLicense);
                     return "layout/user/driver-license";
                 })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.prepare("Driver license", "id", id)));
     }
 
     @GetMapping()
@@ -93,11 +98,10 @@ public class DriverLicenseController {
         return "layout/user/driver-licenses";
     }
 
-
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable("id") Long id) {
         if (!driverLicenseService.deleteById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new NotFoundException(NotFoundException.prepare("Driver license", "id", id));
         }
         return "redirect:/driver-licenses";
     }

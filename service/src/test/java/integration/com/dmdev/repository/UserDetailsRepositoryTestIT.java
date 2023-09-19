@@ -1,15 +1,15 @@
 package integration.com.dmdev.repository;
 
 import com.dmdev.dto.UserDetailsFilterDto;
-import com.dmdev.entity.User;
-import com.dmdev.entity.UserDetails;
 import com.dmdev.repository.UserDetailsRepository;
 import com.dmdev.repository.UserRepository;
-import com.dmdev.utils.UserDetailsPredicate;
+import com.dmdev.utils.predicate.UserDetailsPredicateBuilder;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.entity.UserDetailsTestIT;
-import integration.com.dmdev.entity.UserTestIT;
+import utils.builder.UserDetailsBuilder;
+import utils.builder.UserBuilder;
+
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
@@ -30,11 +30,14 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserDetailsPredicateBuilder userDetailsPredicateBuilder;
+
     @Test
     void shouldFindById() {
-        var expectedUserDetails = Optional.of(UserDetailsTestIT.getExistUserDetails());
+        var expectedUserDetails = Optional.of(UserDetailsBuilder.getExistUserDetails());
 
-        var actualUserDetails = userDetailsRepository.findById(UserDetailsTestIT.TEST_EXISTS_USER_DETAILS_ID);
+        var actualUserDetails = userDetailsRepository.findById(UserDetailsBuilder.TEST_EXISTS_USER_DETAILS_ID);
 
         assertThat(actualUserDetails).isNotNull();
         assertEquals(expectedUserDetails, actualUserDetails);
@@ -42,7 +45,7 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldUpdateUserDetails() {
-        var userDetailsToUpdate = userDetailsRepository.findById(UserDetailsTestIT.TEST_EXISTS_USER_DETAILS_ID).get();
+        var userDetailsToUpdate = userDetailsRepository.findById(UserDetailsBuilder.TEST_EXISTS_USER_DETAILS_ID).get();
 
         userDetailsRepository.save(userDetailsToUpdate);
 
@@ -55,30 +58,30 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldDeleteUserDetails() {
-        var userDetailsToDelete = userDetailsRepository.findById(UserDetailsTestIT.TEST_USER_DETAILS_ID_FOR_DELETE);
+        var userDetailsToDelete = userDetailsRepository.findById(UserDetailsBuilder.TEST_USER_DETAILS_ID_FOR_DELETE);
 
         userDetailsToDelete.ifPresent(u -> userDetailsRepository.delete(u));
 
-        assertThat(userDetailsRepository.findById(UserDetailsTestIT.TEST_USER_DETAILS_ID_FOR_DELETE)).isEmpty();
+        assertThat(userDetailsRepository.findById(UserDetailsBuilder.TEST_USER_DETAILS_ID_FOR_DELETE)).isEmpty();
     }
 
     @Test
     void shouldFindAllUserDetails() {
-        List<UserDetails> userDetails = userDetailsRepository.findAll();
+        List<com.dmdev.entity.UserDetails> userDetails = userDetailsRepository.findAll();
         assertThat(userDetails).hasSize(2);
 
-        List<String> names = userDetails.stream().map(UserDetails::getName).collect(toList());
+        List<String> names = userDetails.stream().map(com.dmdev.entity.UserDetails::getName).collect(toList());
         assertThat(names).containsExactlyInAnyOrder("Semen", "Vyacheslav");
     }
 
 
     @Test
     void shouldReturnUserDetailsByUserId() {
-        var optionalUserDetails = userDetailsRepository.findByUserId(UserTestIT.TEST_EXISTS_USER_ID);
+        var optionalUserDetails = userDetailsRepository.findByUserId(UserBuilder.TEST_EXISTS_USER_ID);
 
         assertThat(optionalUserDetails).isNotNull();
-        assertThat(optionalUserDetails.getId()).isEqualTo(UserDetailsTestIT.getExistUserDetails().getId());
-        assertThat(optionalUserDetails).isEqualTo(UserDetailsTestIT.getExistUserDetails());
+        assertThat(optionalUserDetails.getId()).isEqualTo(UserDetailsBuilder.getExistUserDetails().getId());
+        assertThat(optionalUserDetails).isEqualTo(UserDetailsBuilder.getExistUserDetails());
     }
 
     @Test
@@ -88,18 +91,18 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                 .lastname("Blagov")
                 .build();
 
-        Iterable<UserDetails> userDetails = userDetailsRepository.findAll(UserDetailsPredicate.build(userDetailsFilter));
+        Iterable<com.dmdev.entity.UserDetails> userDetails = userDetailsRepository.findAll(userDetailsPredicateBuilder.build(userDetailsFilter));
 
         assertThat(userDetails).hasSize(1);
-        assertThat(userDetails.iterator().next()).isEqualTo(UserDetailsTestIT.getExistUserDetails());
+        assertThat(userDetails.iterator().next()).isEqualTo(UserDetailsBuilder.getExistUserDetails());
     }
 
     @Test
     void shouldReturnUserDetailsByNameAndSurnameWithoutFilter() {
-        List<UserDetails> userDetails = userDetailsRepository.findAllByNameContainingIgnoreCaseAndLastnameContainingIgnoreCase("Vyacheslav", "Blagov");
+        List<com.dmdev.entity.UserDetails> userDetails = userDetailsRepository.findAllByNameContainingIgnoreCaseAndLastnameContainingIgnoreCase("Vyacheslav", "Blagov");
 
         assertThat(userDetails).hasSize(1);
-        assertThat(userDetails.get(0)).isEqualTo(UserDetailsTestIT.getExistUserDetails());
+        assertThat(userDetails.get(0)).isEqualTo(UserDetailsBuilder.getExistUserDetails());
     }
 
     @Test
@@ -108,30 +111,30 @@ class UserDetailsRepositoryTestIT extends IntegrationBaseTest {
                 .birthday(LocalDate.of(1994, 12, 5))
                 .build();
         Sort sort = Sort.by("lastname").descending().by("name").descending();
-        Iterable<UserDetails> userDetails = userDetailsRepository.findAll(UserDetailsPredicate.build(userDetailsFilter), sort);
+        Iterable<com.dmdev.entity.UserDetails> userDetails = userDetailsRepository.findAll(userDetailsPredicateBuilder.build(userDetailsFilter), sort);
         assertThat(userDetails).hasSize(1);
 
-        List<String> emails = StreamSupport.stream(userDetails.spliterator(), false).map(UserDetails::getUser).map(User::getEmail).collect(toList());
+        List<String> emails = StreamSupport.stream(userDetails.spliterator(), false).map(com.dmdev.entity.UserDetails::getUser).map(com.dmdev.entity.User::getEmail).collect(toList());
         assertThat(emails).contains("client@client.com");
     }
 
     @Test
     void shouldNotReturnUserDetailsByRegistrationDate() {
-        List<UserDetails> userDetails = userDetailsRepository.findByRegistrationDate(LocalDate.of(2022, 9, 21));
+        List<com.dmdev.entity.UserDetails> userDetails = userDetailsRepository.findByRegistrationDate(LocalDate.of(2022, 9, 21));
 
         assertThat(userDetails).isEmpty();
     }
 
     @Test
     void shouldReturnUserDetailsByRegistrationDate() {
-        List<UserDetails> userDetails = userDetailsRepository.findByRegistrationDate(LocalDate.of(2023, 7, 3));
+        List<com.dmdev.entity.UserDetails> userDetails = userDetailsRepository.findByRegistrationDate(LocalDate.of(2023, 7, 3));
 
         assertThat(userDetails).hasSize(2);
     }
 
     @Test
     void shouldReturnUserDetailsByRegistrationDates() {
-        List<UserDetails> userDetails = userDetailsRepository.findByRegistrationDateBetween(LocalDate.of(2022, 1, 1), LocalDate.of(2023, 12, 31));
+        List<com.dmdev.entity.UserDetails> userDetails = userDetailsRepository.findByRegistrationDateBetween(LocalDate.of(2022, 1, 1), LocalDate.of(2023, 12, 31));
 
         assertThat(userDetails).hasSize(2);
     }

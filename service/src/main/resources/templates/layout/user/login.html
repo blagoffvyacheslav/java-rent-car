@@ -1,22 +1,37 @@
-<div th:fragment="login">
-<div class="modal" id="modal1">
-    <div class="modal-content">
-        <div>
-            <h2 class="text-center">Login</h2>
-            <form id="sign-in-form" th:action="@{/users/login}" method="post" th:fragment="sign-in">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" class="form-control" maxlength="40" title="password"
-                           autocomplete="off" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
-            </form>
-            <button class="closeModal btn btn-secondary btn-block mt-2" data-modal="modal1">Close</button>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarTime</title>
+    <head th:replace="layout/common :: common">
+    </head>
+</head>
+<body>
+    <div class="container">
+            <div class="col-md-4">
+                <h1>CarTime</h1>
+                <h3>Carsharing</h3>
+            </div>
+    <div class="col-md-4">
+    <h1>Login</h1>
+    <form id="sign-in-form" th:action="@{/login}" method="post" th:fragment="sign-in">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" class="form-control" required>
         </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" maxlength="40" title="password"
+                   autocomplete="off" required>
+        </div>
+        <div style="color: red" th:if="${param.error}">
+            Bad credentials
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+    </div>
     </div>
 </div>
-</div>
+</body>
+</html>

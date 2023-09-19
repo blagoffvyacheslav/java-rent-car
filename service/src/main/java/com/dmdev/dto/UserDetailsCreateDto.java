@@ -1,29 +1,31 @@
 package com.dmdev.dto;
 
 import lombok.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 @Value
 public class UserDetailsCreateDto {
 
-    @NotNull
+    @NotBlank
     Long userId;
 
-    @NotEmpty
+    @NotBlank(message = "Name is required")
     String name;
 
-    @NotEmpty
+    @NotBlank(message = "Lastname is required")
     String lastname;
 
-    @NotEmpty
+    @NotBlank(message = "Address is required")
     String address;
 
-    @NotEmpty
+    @NotBlank(message = "Phone is required")
     String phone;
 
-    @NotEmpty
+    @Past
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate birthday;
 }

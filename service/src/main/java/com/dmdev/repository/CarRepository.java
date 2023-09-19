@@ -13,9 +13,7 @@ import java.util.Optional;
 public interface CarRepository extends JpaRepository<Car, Long>, QuerydslPredicateExecutor<Car> {
 
     Optional<Car> findBySerialNumber(String serialNumber);
-
     List<Car> findBySerialNumberContainingIgnoreCase(String serialNumber);
-
 
     @Query(value = "SELECT c " +
             "FROM Car c " +
@@ -30,6 +28,11 @@ public interface CarRepository extends JpaRepository<Car, Long>, QuerydslPredica
             "JOIN fetch o.damages a " +
             "WHERE o.damages.size = 0 ")
     List<Car> findAllWithoutDamages();
+
+    @Query(value = "SELECT c " +
+            "FROM Car c " +
+            "WHERE c.isNew = true ")
+    List<Car> findAllIsNew();
 
     @Query(value = "SELECT count(o.id) = 0 " +
             "FROM orders o " +

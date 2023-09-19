@@ -1,16 +1,14 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.entity.Damage;
 import com.dmdev.entity.Car;
-import com.dmdev.entity.Order;
 import com.dmdev.repository.DamageRepository;
 import com.dmdev.repository.OrderRepository;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.entity.DamageTestIT;
-import integration.com.dmdev.entity.OrderTestIT;
+import utils.builder.DamageBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import utils.builder.OrderBuilder;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,8 +29,8 @@ class DamageRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldSaveDamage() {
-        var order = orderRepository.findById(OrderTestIT.TEST_EXISTS_ORDER_ID).get();
-        var damageToSave = DamageTestIT.createDamage();
+        var order = orderRepository.findById(OrderBuilder.TEST_EXISTS_ORDER_ID).get();
+        var damageToSave = DamageBuilder.createDamage();
         order.setDamage(damageToSave);
 
         var savedDamage = damageRepository.saveAndFlush(damageToSave);
@@ -42,9 +40,9 @@ class DamageRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindByIdDamage() {
-        var expectedDamage = Optional.of(DamageTestIT.getExistDamage());
+        var expectedDamage = Optional.of(DamageBuilder.getExistDamage());
 
-        var actualDamage = damageRepository.findById(DamageTestIT.TEST_EXISTS_DAMAGE_ID);
+        var actualDamage = damageRepository.findById(DamageBuilder.TEST_EXISTS_DAMAGE_ID);
 
         assertThat(actualDamage).isNotNull();
         assertEquals(expectedDamage, actualDamage);
@@ -52,8 +50,8 @@ class DamageRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldUpdateDamage() {
-        var damageToUpdate = damageRepository.findById(DamageTestIT.TEST_EXISTS_DAMAGE_ID).get();
-        var existOrder = orderRepository.findById(OrderTestIT.TEST_EXISTS_ORDER_ID).get();
+        var damageToUpdate = damageRepository.findById(DamageBuilder.TEST_EXISTS_DAMAGE_ID).get();
+        var existOrder = orderRepository.findById(OrderBuilder.TEST_EXISTS_ORDER_ID).get();
         damageToUpdate.setAmount(BigDecimal.valueOf(3456.76));
         damageToUpdate.setDescription("test description");
         damageToUpdate.setOrder(existOrder);
@@ -66,19 +64,19 @@ class DamageRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldDeleteDamage() {
-        var damage = damageRepository.findById(DamageTestIT.TEST_DAMAGE_ID_FOR_DELETE);
+        var damage = damageRepository.findById(DamageBuilder.TEST_DAMAGE_ID_FOR_DELETE);
 
         damage.ifPresent(dmg -> damageRepository.delete(dmg));
 
-        assertThat(damageRepository.findById(DamageTestIT.TEST_DAMAGE_ID_FOR_DELETE)).isEmpty();
+        assertThat(damageRepository.findById(DamageBuilder.TEST_DAMAGE_ID_FOR_DELETE)).isEmpty();
     }
 
     @Test
     void shouldFindAllDamages() {
-        List<Damage> damages = damageRepository.findAll();
+        List<com.dmdev.entity.Damage> damages = damageRepository.findAll();
         assertThat(damages).hasSize(2);
 
-        List<BigDecimal> damage = damages.stream().map(Damage::getAmount).collect(toList());
+        List<BigDecimal> damage = damages.stream().map(com.dmdev.entity.Damage::getAmount).collect(toList());
         assertThat(damage).containsExactlyInAnyOrder(
                 BigDecimal.valueOf(100.00).setScale(2), BigDecimal.valueOf(50.00).setScale(2));
     }
@@ -86,42 +84,42 @@ class DamageRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldFindAllDamagesSortedByOrderAndAmount() {
         Sort sort = Sort.by("order").descending().and(Sort.by("amount")).descending();
-        List<Damage> damages = damageRepository.findAll(sort);
+        List<com.dmdev.entity.Damage> damages = damageRepository.findAll(sort);
 
         assertThat(damages).hasSize(2);
 
-        List<Long> orderIds = damages.stream().map(Damage::getOrder).map(Order::getId).collect(toList());
+        List<Long> orderIds = damages.stream().map(com.dmdev.entity.Damage::getOrder).map(com.dmdev.entity.Order::getId).collect(toList());
         assertThat(orderIds).containsExactly(
                 2L, 1L);
 
-        List<BigDecimal> damage = damages.stream().map(Damage::getAmount).collect(toList());
+        List<BigDecimal> damage = damages.stream().map(com.dmdev.entity.Damage::getAmount).collect(toList());
         assertThat(damage).containsExactly(
                 BigDecimal.valueOf(50.00).setScale(2), BigDecimal.valueOf(100.00).setScale(2));
     }
 
     @Test
     void shouldFindAllDamagesByOrderId() {
-        List<Damage> damages = damageRepository.findAllByOrderId(OrderTestIT.TEST_EXISTS_ORDER_ID);
+        List<com.dmdev.entity.Damage> damages = damageRepository.findAllByOrderId(OrderBuilder.TEST_EXISTS_ORDER_ID);
 
         assertThat(damages).hasSize(1);
-        assertThat(damages.get(0)).isEqualTo(DamageTestIT.getExistDamage());
+        assertThat(damages.get(0)).isEqualTo(DamageBuilder.getExistDamage());
     }
 
     @Test
     void shouldFindAllDamagesByNameAndLastname() {
-        List<Damage> damages = damageRepository.findAllByNameAndLastname("Vyacheslav", "Blagov");
+        List<com.dmdev.entity.Damage> damages = damageRepository.findAllByNameAndLastname("Vyacheslav", "Blagov");
 
         assertThat(damages).hasSize(1);
-        assertThat(damages.get(0)).isEqualTo(DamageTestIT.getExistDamage());
+        assertThat(damages.get(0)).isEqualTo(DamageBuilder.getExistDamage());
     }
 
     @Test
     void shouldFindAllDamagesBySerialNumber() {
-        List<Damage> damages = damageRepository.findAllBySerialNumber("0123456");
+        List<com.dmdev.entity.Damage> damages = damageRepository.findAllBySerialNumber("0123456");
         assertThat(damages).hasSize(1);
         List<String> carSerialNumbers = damages.stream()
-                .map(Damage::getOrder)
-                .map(Order::getCar)
+                .map(com.dmdev.entity.Damage::getOrder)
+                .map(com.dmdev.entity.Order::getCar)
                 .map(Car::getSerialNumber)
                 .collect(toList());
 
@@ -131,7 +129,7 @@ class DamageRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDamagesByMoreAvgAmount() {
-        List<Damage> damages = damageRepository.findAllByAvgAmountMore();
+        List<com.dmdev.entity.Damage> damages = damageRepository.findAllByAvgAmountMore();
 
         assertThat(damages).hasSize(1);
         assertThat(damages.get(0).getAmount()).isEqualTo(BigDecimal.valueOf(100.00).setScale(2));
@@ -139,7 +137,7 @@ class DamageRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDamagesByMoreAmount() {
-        List<Damage> damages = damageRepository.findAllByAmount(BigDecimal.valueOf(100.00).setScale(2));
+        List<com.dmdev.entity.Damage> damages = damageRepository.findAllByAmount(BigDecimal.valueOf(100.00).setScale(2));
 
         assertThat(damages).hasSize(1);
         assertThat(damages.get(0).getAmount()).isEqualTo(BigDecimal.valueOf(100.00).setScale(2));

@@ -30,4 +30,9 @@ public class Damage extends AuditingEntity<Long> {
     @NotNull
     @Column(precision = 10, scale = 2)
     private BigDecimal amount;
+
+    public void setOrder(Order order) {
+        this.order = order;
+        this.order.getDamages().add(this);
+    }
 }

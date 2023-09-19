@@ -1,12 +1,12 @@
-package integration.com.dmdev.entity;
+package utils.builder;
 
 import com.dmdev.entity.OrderDetails;
-import integration.com.dmdev.IntegrationBaseTest;
+
 import java.time.LocalDateTime;
 
-import static integration.com.dmdev.entity.OrderTestIT.getExistOrder;
+import static utils.builder.OrderBuilder.getExistOrder;
 
-public class OrderDetailsTestIT extends IntegrationBaseTest {
+public class OrderDetailsBuilder {
 
     public static final Long TEST_EXISTS_ORDER_DETAILS_ID = 2L;
     public static final Long TEST_ORDER_DETAILS_ID_FOR_DELETE = 1L;

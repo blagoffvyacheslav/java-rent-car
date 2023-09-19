@@ -1,12 +1,12 @@
-package integration.com.dmdev.entity;
+package utils.builder;
 
 import com.dmdev.entity.DriverLicense;
-import integration.com.dmdev.IntegrationBaseTest;
+
 import java.time.LocalDate;
 
-import static integration.com.dmdev.entity.UserDetailsTestIT.getExistUserDetails;
+import static utils.builder.UserDetailsBuilder.getExistUserDetails;
 
-public class DriverLicenseTestIT extends IntegrationBaseTest {
+public class DriverLicenseBuilder {
 
     public static final Long TEST_EXISTS_DRIVER_LICENSE_ID = 2L;
     public static final Long TEST_DRIVER_LICENSE_ID_FOR_DELETE = 1L;

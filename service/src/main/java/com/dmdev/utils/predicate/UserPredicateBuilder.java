@@ -1,13 +1,15 @@
-package com.dmdev.utils;
+package com.dmdev.utils.predicate;
 
 import com.dmdev.dto.UserFilterDto;
 import com.querydsl.core.types.Predicate;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 
 import static com.dmdev.entity.QUser.user;
 
-@UtilityClass
-public class UserPredicate {
+@Component
+public class UserPredicateBuilder implements PredicateBuilder<UserFilterDto> {
+
+    @Override
     public Predicate build(UserFilterDto requestFilter) {
         return QPredicate.builder()
                 .add(requestFilter.getUsername(), user.username::eq)

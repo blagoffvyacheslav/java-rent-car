@@ -1,13 +1,12 @@
-package integration.com.dmdev.entity;
+package utils.builder;
 
 import com.dmdev.entity.UserDetails;
-import integration.com.dmdev.IntegrationBaseTest;
 
 import java.time.LocalDate;
 
-import static integration.com.dmdev.entity.UserTestIT.getExistUser;
+import static utils.builder.UserBuilder.getExistUser;
 
-public class UserDetailsTestIT extends IntegrationBaseTest {
+public class UserDetailsBuilder {
 
     public static final Long TEST_EXISTS_USER_DETAILS_ID = 2L;
     public static final Long TEST_USER_DETAILS_ID_FOR_DELETE = 1L;

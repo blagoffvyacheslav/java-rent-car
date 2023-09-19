@@ -1,18 +1,30 @@
-package integration.com.dmdev.dto;
+package utils.builder;
 
-import com.dmdev.dto.DriverLicenseReadDto;
-import com.dmdev.dto.UserCreateDto;
-import com.dmdev.dto.UserUpdateDto;
-import com.dmdev.dto.UserReadDto;
-import com.dmdev.dto.UserDetailsReadDto;
+import com.dmdev.dto.*;
 import com.dmdev.entity.Role;
+
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;
 
 @UtilityClass
-public class TestDto {
+public class TestDtoBuilder {
 
+    public static CarUpdateDto createCarUpdateDTO(Long modelId) {
+        return new CarUpdateDto(modelId, "asdfdsfs", Boolean.TRUE, null);
+    }
+
+    public static CarCreateDto createCarCreateDTO(Long modelId) {
+        return new CarCreateDto(modelId, "asdfdsfs", Boolean.TRUE, null);
+    }
+
+    public static ModelCreateDto createModelCreateDTO() {
+        return new ModelCreateDto("Kia Rio 2");
+    }
+
+    public static ModelUpdateDto createModelUpdateDTO() {
+        return new ModelUpdateDto("Opel Astra");
+    }
 
     public static UserCreateDto createUserCreateDTO() {
         return new UserCreateDto(
@@ -43,7 +55,6 @@ public class TestDto {
                 LocalDate.of(2020, 10, 10),
                 LocalDate.of(2030, 10, 10));
     }
-
 
     public static UserReadDto getUserReadDto() {
         return UserReadDto.builder()

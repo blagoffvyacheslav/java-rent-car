@@ -3,7 +3,7 @@ package integration.com.dmdev.http.controllers;
 import com.dmdev.dto.UserReadDto;
 import com.dmdev.service.UserService;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.dto.TestDto;
+import utils.builder.TestDtoBuilder;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,6 @@ class UserRestControllerTestIT extends IntegrationBaseTest {
     @Test
     void shouldReturnNotFoundWithInvalidEndpoint() throws Exception {
         UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/8974239878");
-
         mockMvc.perform(
                         get(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
@@ -58,7 +57,7 @@ class UserRestControllerTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldCreateUserCorrectly() throws Exception {
-        var userCreateRequestDTO = TestDto.createUserCreateDTO();
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateDTO();
         UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT);
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
@@ -82,12 +81,9 @@ class UserRestControllerTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnUserByIdCorrectly() throws Exception {
-        var userCreateDTO = TestDto.createUserCreateDTO();
-
+        var userCreateDTO = TestDtoBuilder.createUserCreateDTO();
         var saved = userService.create(userCreateDTO);
-
-        var expected = saved.get();
-        assertExpectedIsSaved(expected, expected.getId());
+        assertExpectedIsSaved(saved, saved.getId());
     }
 
     @Test
@@ -120,12 +116,9 @@ class UserRestControllerTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturn200IfUserLoginCorrectly() throws Exception {
-        var userCreateDTO = TestDto.createUserCreateDTO();
-
+        var userCreateDTO = TestDtoBuilder.createUserCreateDTO();
         var saved = userService.create(userCreateDTO);
-        var expected = saved.get();
-        assertExpectedIsSaved(expected, expected.getId());
-
+        assertExpectedIsSaved(saved, saved.getId());
         mockMvc.perform(post(fromUriString(ENDPOINT + "/login").build().encode().toUri())
                         .headers(commonHeaders)
                         .accept(MediaType.TEXT_HTML)
@@ -138,7 +131,6 @@ class UserRestControllerTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturn200IfUserLogoutCorrectly() throws Exception {
-
         mockMvc.perform(post(fromUriString(ENDPOINT + "/logout").build().encode().toUri())
                         .headers(commonHeaders)
                         .accept(MediaType.TEXT_HTML)
@@ -149,14 +141,11 @@ class UserRestControllerTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldUpdateUserCorrectly() throws Exception {
-        var userCreateRequestDTO = TestDto.createUserCreateDTO();
-
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateDTO();
         var saved = userService.create(userCreateRequestDTO);
-        var expected = saved.get();
-        assertExpectedIsSaved(expected, expected.getId());
-
-        var userUpdateRequestDTO = TestDto.createUserUpdateDTO();
-        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + expected.getId() + "/update");
+        assertExpectedIsSaved(saved, saved.getId());
+        var userUpdateRequestDTO = TestDtoBuilder.createUserUpdateDTO();
+        UriComponentsBuilder uriBuilder = fromUriString(ENDPOINT + "/" + saved.getId() + "/update");
         mockMvc.perform(
                         post(uriBuilder.build().encode().toUri())
                                 .headers(commonHeaders)
@@ -166,26 +155,21 @@ class UserRestControllerTestIT extends IntegrationBaseTest {
                                 .param("username", userUpdateRequestDTO.getUsername())
                                 .param("role", userUpdateRequestDTO.getRole().toString()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", ENDPOINT + "/" + expected.getId()));
+                .andExpect(header().string("Location", ENDPOINT + "/" + saved.getId()));
     }
 
     @Test
     void shouldReturn3xxOnDelete() throws Exception {
-        var userCreateRequestDTO = TestDto.createUserCreateDTO();
-
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateDTO();
         var saved = userService.create(userCreateRequestDTO);
-
-        assertThat(saved).isPresent();
-
-        mockMvc.perform(post(fromUriString(ENDPOINT + "/" + saved.get().getId() + "/delete").build().encode().toUri())
+        mockMvc.perform(post(fromUriString(ENDPOINT + "/" + saved.getId() + "/delete").build().encode().toUri())
                         .headers(commonHeaders)
                         .accept(MediaType.TEXT_HTML)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", ENDPOINT));
 
-        var result = assertThrowsExactly(ResponseStatusException.class, () -> userService.getById(saved.get().getId()));
-
+        var result = assertThrowsExactly(ResponseStatusException.class, () -> userService.getById(saved.getId()));
         assertEquals(404, result.getRawStatusCode());
     }
 
