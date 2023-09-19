@@ -19,17 +19,4 @@ public class LoginController {
     public String getLogin() {
         return "layout/user/login";
     }
-
-//    @PostMapping("/login")
-//    public String login(@ModelAttribute @Valid LoginDto loginDto,
-//                        RedirectAttributes redirectedAttributes,
-//                        HttpServletRequest request) {
-//        return userService.login(loginDto)
-//                .map(user -> {
-//                            request.getSession().setAttribute("user", user);
-//                            redirectedAttributes.addFlashAttribute(SUCCESS_ATTRIBUTE, "Your login was successfully. Now you can choose car");
-//                            return "redirect:/home";
-//                        }
-//                ).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, ("User with these credentials does not exist. Please try again")));
-//    }
 }

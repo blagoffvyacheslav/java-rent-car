@@ -30,7 +30,7 @@ public class SecurityConfiguration {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder()); // Если используется кодирование паролей
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 

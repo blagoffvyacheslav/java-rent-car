@@ -17,10 +17,4 @@ public class ModelReadMapper implements Mapper<Model, ModelReadDto> {
                 .name(model.getName())
                 .build();
     }
-
-//    public Set<ModelReadDto> mapToDtos(Set<Model> models) {
-//        return models.stream()
-//                .map(this::mapToDto)
-//                .collect(Collectors.toSet());
-//    }
 }
