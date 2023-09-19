@@ -5,8 +5,8 @@ import com.dmdev.dto.DriverLicenseReadDto;
 import com.dmdev.service.DriverLicenseService;
 import com.dmdev.service.UserService;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.dto.TestDto;
-import integration.com.dmdev.entity.DriverLicenseTestIT;
+import utils.builder.TestDtoBuilder;
+import utils.builder.DriverLicenseBuilder;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
@@ -26,14 +26,13 @@ class DriverLicenseServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldSaveDriverLicenseCorrectly() {
-        var userCreateRequestDTO = TestDto.createUserCreateDTO();
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateDTO();
 
         var actualUser = userService.create(userCreateRequestDTO);
 
-        assertTrue(actualUser.isPresent());
-        assertEquals(userCreateRequestDTO.getDriverLicenseNumber(), actualUser.get().getDriverLicenseDto().getLicenseNumber());
-        assertEquals(userCreateRequestDTO.getDriverLicenseIssueDate(), actualUser.get().getDriverLicenseDto().getIssueDate());
-        assertEquals(userCreateRequestDTO.getDriverLicenseExpiredDate(), actualUser.get().getDriverLicenseDto().getExpiredDate());
+        assertEquals(userCreateRequestDTO.getDriverLicenseNumber(), actualUser.getDriverLicenseDto().getLicenseNumber());
+        assertEquals(userCreateRequestDTO.getDriverLicenseIssueDate(), actualUser.getDriverLicenseDto().getIssueDate());
+        assertEquals(userCreateRequestDTO.getDriverLicenseExpiredDate(), actualUser.getDriverLicenseDto().getExpiredDate());
     }
 
     @Test
@@ -58,7 +57,7 @@ class DriverLicenseServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDriverLicensesByNumber() {
-        var userCreateDto = TestDto.createUserCreateDTO();
+        var userCreateDto = TestDtoBuilder.createUserCreateDTO();
         userService.create(userCreateDto);
 
         var userDetails = driverLicenseService.getByNumber("ae");
@@ -68,37 +67,35 @@ class DriverLicenseServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnDriverLicenseById() {
-        var userCreateDto = TestDto.createUserCreateDTO();
-        var expectedUserDetails = userService.create(userCreateDto).get().getDriverLicenseDto();
+        var userCreateDto = TestDtoBuilder.createUserCreateDTO();
+        var expectedUserDetails = userService.create(userCreateDto).getDriverLicenseDto();
 
         var actualDriverLicense = driverLicenseService.getById(expectedUserDetails.getId());
 
         assertThat(actualDriverLicense).isNotNull();
-        assertEquals(expectedUserDetails, actualDriverLicense.get());
+        assertEquals(expectedUserDetails, actualDriverLicense);
     }
 
     @Test
     void shouldUpdateDriverLicenseCorrectly() {
-        var userCreateDto = TestDto.createUserCreateDTO();
+        var userCreateDto = TestDtoBuilder.createUserCreateDTO();
         var driverLicenseUpdateDto = new DriverLicenseUpdateDto(
                 "number_test",
                 LocalDate.now(),
                 LocalDate.now().plusYears(1));
-        var savedDriverLicense = userService.create(userCreateDto).get().getDriverLicenseDto();
+        var savedDriverLicense = userService.create(userCreateDto).getDriverLicenseDto();
 
         var actualDriverLicense = driverLicenseService.update(savedDriverLicense.getId(), driverLicenseUpdateDto);
 
         assertThat(actualDriverLicense).isNotNull();
-        actualDriverLicense.ifPresent(userDetail -> {
-            assertEquals(driverLicenseUpdateDto.getDriverLicenseNumber(), userDetail.getLicenseNumber());
-            assertSame(driverLicenseUpdateDto.getDriverLicenseExpiredDate(), userDetail.getExpiredDate());
-            assertEquals(driverLicenseUpdateDto.getDriverLicenseIssueDate(), userDetail.getIssueDate());
-        });
+        assertEquals(driverLicenseUpdateDto.getDriverLicenseNumber(), actualDriverLicense.getLicenseNumber());
+        assertSame(driverLicenseUpdateDto.getDriverLicenseExpiredDate(), actualDriverLicense.getExpiredDate());
+        assertEquals(driverLicenseUpdateDto.getDriverLicenseIssueDate(), actualDriverLicense.getIssueDate());
     }
 
     @Test
     void shouldDeleteUserDetailByIdCorrectly() {
-        assertTrue(driverLicenseService.deleteById(DriverLicenseTestIT.TEST_DRIVER_LICENSE_ID_FOR_DELETE));
+        assertTrue(driverLicenseService.deleteById(DriverLicenseBuilder.TEST_DRIVER_LICENSE_ID_FOR_DELETE));
     }
 
     @Test

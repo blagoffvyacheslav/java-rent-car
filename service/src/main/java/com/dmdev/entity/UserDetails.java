@@ -1,10 +1,10 @@
 package com.dmdev.entity;
 
 import lombok.*;
+
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.HashSet;

@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface DamageRepository extends JpaRepository<Damage, Long>, QuerydslPredicateExecutor<Damage> {
 
-
     @Query(value = "SELECT d " +
             "FROM Damage d " +
             "WHERE d.amount >= :amount " +

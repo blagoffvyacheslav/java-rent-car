@@ -33,4 +33,9 @@ public class CarRate implements BaseEntity<Long> {
     @Column(precision = 10, scale = 1)
     private BigDecimal price;
 
+    public void setModel (Model model) {
+        this.model = model;
+        this.model.getCarRates().add(this);
+    }
+
 }

@@ -1,10 +1,9 @@
 package integration.com.dmdev.repository;
 
 
-import com.dmdev.entity.OrderDetails;
 import com.dmdev.repository.OrderDetailsRepository;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.entity.OrderDetailsTestIT;
+import utils.builder.OrderDetailsBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,9 +22,9 @@ class OrderDetailsRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindByIdCarRentalTime() {
-        var expectedOrderDetails = Optional.of(OrderDetailsTestIT.getExistOrderDetails());
+        var expectedOrderDetails = Optional.of(OrderDetailsBuilder.getExistOrderDetails());
 
-        var actualOrderDetails = orderDetailsRepository.findById(OrderDetailsTestIT.TEST_EXISTS_ORDER_DETAILS_ID);
+        var actualOrderDetails = orderDetailsRepository.findById(OrderDetailsBuilder.TEST_EXISTS_ORDER_DETAILS_ID);
 
         assertThat(actualOrderDetails).isNotNull();
         assertEquals(expectedOrderDetails, actualOrderDetails);
@@ -33,7 +32,7 @@ class OrderDetailsRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldUpdateCarRentalTime() {
-        var orderDetailsToUpdate = orderDetailsRepository.findById(OrderDetailsTestIT.TEST_EXISTS_ORDER_DETAILS_ID).get();
+        var orderDetailsToUpdate = orderDetailsRepository.findById(OrderDetailsBuilder.TEST_EXISTS_ORDER_DETAILS_ID).get();
 
         orderDetailsToUpdate.setEndDate(LocalDateTime.of(2022, 11, 9, 10, 0));
 
@@ -49,22 +48,22 @@ class OrderDetailsRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldDeleteCarRentalTime() {
 
-        var orderDetailsToDelete = orderDetailsRepository.findById(OrderDetailsTestIT.TEST_ORDER_DETAILS_ID_FOR_DELETE);
+        var orderDetailsToDelete = orderDetailsRepository.findById(OrderDetailsBuilder.TEST_ORDER_DETAILS_ID_FOR_DELETE);
         orderDetailsToDelete.ifPresent(crt -> crt.getOrder().setOrderDetails(null));
         orderDetailsToDelete.ifPresent(crt -> orderDetailsRepository.delete(crt));
 
 
-        assertThat(orderDetailsRepository.findById(OrderDetailsTestIT.TEST_ORDER_DETAILS_ID_FOR_DELETE)).isEmpty();
+        assertThat(orderDetailsRepository.findById(OrderDetailsBuilder.TEST_ORDER_DETAILS_ID_FOR_DELETE)).isEmpty();
 
     }
 
     @Test
     void shouldFindAllCarRentalTimes() {
 
-        List<OrderDetails> carRentalTimes = orderDetailsRepository.findAll();
+        List<com.dmdev.entity.OrderDetails> carRentalTimes = orderDetailsRepository.findAll();
         assertThat(carRentalTimes).hasSize(2);
 
-        List<LocalDateTime> startTimes = carRentalTimes.stream().map(OrderDetails::getStartDate).collect(toList());
+        List<LocalDateTime> startTimes = carRentalTimes.stream().map(com.dmdev.entity.OrderDetails::getStartDate).collect(toList());
         assertThat(startTimes).containsExactlyInAnyOrder(
                 LocalDateTime.of(2023, 7, 02, 0, 0), LocalDateTime.of(2023, 7, 10, 0, 0));
 

@@ -11,71 +11,84 @@ import com.dmdev.mapper.UserDetailsReadMapper;
 import com.dmdev.mapper.UserDetailsUpdateMapper;
 import com.dmdev.repository.UserDetailsRepository;
 import com.dmdev.repository.UserRepository;
-import com.dmdev.utils.QPredicate;
+import com.dmdev.service.exception.NotFoundException;
+import com.dmdev.utils.predicate.UserDetailsPredicateBuilder;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.dmdev.entity.QUserDetails.userDetails;
-
 @Service
 @RequiredArgsConstructor
-public class UserDetailsService {
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
     private final UserDetailsRepository userDetailsRepository;
     private final UserRepository userRepository;
     private final UserDetailsCreateMapper userDetailsCreateMapper;
     private final UserDetailsUpdateMapper userDetailsUpdateMapper;
     private final UserDetailsReadMapper userDetailsReadMapper;
+    private final UserDetailsPredicateBuilder userDetailsPredicateBuilder;
+
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username));
+
+        if(user.isPresent()){
+            List<GrantedAuthority> authorities = Collections.singletonList(
+                    new SimpleGrantedAuthority(user.get().getRole().toString())
+            );
+            return new org.springframework.security.core.userdetails.User(
+                    user.get().getUsername(),
+                    user.get().getPassword(),
+                    authorities
+            );
+        }
+
+        throw new UsernameNotFoundException("empty or invalud user");
+    }
 
     @Transactional
-    public Optional<UserDetailsReadDto> create(UserDetailsCreateDto userDetailsCreateDto) {
+    public UserDetailsReadDto create(UserDetailsCreateDto userDetailsCreateDto) {
         var existingUser = getUserByIdOrElseThrow(userDetailsCreateDto.getUserId());
         var userDetails = userDetailsCreateMapper.map(userDetailsCreateDto);
         userDetails.setUser(existingUser);
 
-        return Optional.of(userDetails)
-                .map(userDetailsRepository::save)
-                .map(userDetailsReadMapper::map);
+        var savedEntity = userDetailsRepository.save(userDetails);
 
+        return userDetailsReadMapper.map(savedEntity);
     }
 
     @Transactional
-    public Optional<UserDetailsReadDto> update(Long id, UserDetailsUpdateDto userDetails) {
+    public UserDetailsReadDto update(Long id, UserDetailsUpdateDto userDetails) {
         var existingUserDetails = getByIdOrElseThrow(id);
 
-        return Optional.of(userDetailsUpdateMapper.map(userDetails, existingUserDetails))
-                .map(userDetailsRepository::save)
-                .map(userDetailsReadMapper::map);
+        var entity = userDetailsUpdateMapper.map(userDetails, existingUserDetails);
+        var savedEntity = userDetailsRepository.save(entity);
+        return userDetailsReadMapper.map(savedEntity);
     }
 
     @Transactional(readOnly = true)
-    public Optional<UserDetailsReadDto> getById(Long id) {
-        return Optional.of(getByIdOrElseThrow(id))
-                .map(userDetailsReadMapper::map);
+    public UserDetailsReadDto getById(Long id) {
+        return userDetailsReadMapper.map(getByIdOrElseThrow(id));
     }
 
     @Transactional(readOnly = true)
     public Page<UserDetailsReadDto> getAll(UserDetailsFilterDto userDetailsFilterDto, Integer page, Integer pageSize) {
         var pageRequest = PageRequest.of(page, pageSize).withSort(Sort.Direction.ASC, "lastname");
         return userDetailsRepository.findAll(
-                        (QPredicate.builder()
-                                .add(userDetailsFilterDto.getName(), userDetails.name::containsIgnoreCase)
-                                .add(userDetailsFilterDto.getLastname(), userDetails.lastname::containsIgnoreCase)
-                                .add(userDetailsFilterDto.getBirthday(), userDetails.birthday::eq)
-                                .add(userDetailsFilterDto.getPhone(), userDetails.phone::eq)
-                                .add(userDetailsFilterDto.getAddress(), userDetails.address::containsIgnoreCase)
-                                .buildAnd()), pageRequest)
+                        (userDetailsPredicateBuilder.build(userDetailsFilterDto)), pageRequest)
                 .map(userDetailsReadMapper::map);
     }
 
@@ -118,12 +131,12 @@ public class UserDetailsService {
 
     private User getUserByIdOrElseThrow(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.prepare("User", "id", id)));
     }
 
     private UserDetails getByIdOrElseThrow(Long id) {
         return userDetailsRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.prepare("User", "id", id)));
 
     }
 }

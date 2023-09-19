@@ -1,11 +1,9 @@
-package integration.com.dmdev.entity;
+package utils.builder;
 
 import com.dmdev.entity.Role;
 import com.dmdev.entity.User;
-import integration.com.dmdev.IntegrationBaseTest;
 
-
-public class UserTestIT extends IntegrationBaseTest {
+public class UserBuilder {
 
     public static final Long TEST_EXISTS_USER_ID = 2L;
     public static final Long TEST_USER_ID_FOR_DELETE = 1L;

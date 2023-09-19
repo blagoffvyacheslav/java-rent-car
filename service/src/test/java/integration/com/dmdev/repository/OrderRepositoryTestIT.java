@@ -1,14 +1,13 @@
 package integration.com.dmdev.repository;
 
-import com.dmdev.entity.*;
 import com.dmdev.repository.CarRepository;
 import com.dmdev.repository.OrderRepository;
 import com.dmdev.repository.UserRepository;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.entity.CarTestIT;
-import integration.com.dmdev.entity.OrderDetailsTestIT;
-import integration.com.dmdev.entity.OrderTestIT;
-import integration.com.dmdev.entity.UserTestIT;
+import utils.builder.CarBuilder;
+import utils.builder.OrderBuilder;
+import utils.builder.OrderDetailsBuilder;
+import utils.builder.UserBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,12 +33,12 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldSaveOrder() {
-        var user = userRepository.findById(UserTestIT.TEST_EXISTS_USER_ID).get();
-        var car = carRepository.findById(CarTestIT.TEST_EXISTS_CAR_ID).get();
-        var orderToSave = OrderTestIT.createOrder();
+        var user = userRepository.findById(UserBuilder.TEST_EXISTS_USER_ID).get();
+        var car = carRepository.findById(CarBuilder.TEST_EXISTS_CAR_ID).get();
+        var orderToSave = OrderBuilder.createOrder();
         orderToSave.setUser(user);
         orderToSave.setCar(car);
-        var orderDetails = OrderDetailsTestIT.createOrderDetails();
+        var orderDetails = OrderDetailsBuilder.createOrderDetails();
         orderDetails.setOrder(orderToSave);
 
         var savedOrder = orderRepository.save(orderToSave);
@@ -50,9 +49,9 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldFindByIdOrder() {
-        var expectedOrder = Optional.of(OrderTestIT.getExistOrder());
+        var expectedOrder = Optional.of(OrderBuilder.getExistOrder());
 
-        var actualOrder = orderRepository.findById(OrderTestIT.TEST_EXISTS_ORDER_ID);
+        var actualOrder = orderRepository.findById(OrderBuilder.TEST_EXISTS_ORDER_ID);
 
         assertThat(actualOrder).isNotNull();
         assertEquals(expectedOrder, actualOrder);
@@ -61,7 +60,7 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
     @Test
     void shouldUpdateOrder() {
         var startRentalDate = LocalDateTime.of(2022, 10, 11, 13, 0);
-        var orderToUpdate = orderRepository.findById(OrderTestIT.TEST_EXISTS_ORDER_ID).get();
+        var orderToUpdate = orderRepository.findById(OrderBuilder.TEST_EXISTS_ORDER_ID).get();
 
         var orderDetails = orderToUpdate.getOrderDetails();
         orderDetails.setStartDate(startRentalDate);
@@ -78,21 +77,21 @@ class OrderRepositoryTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldDeleteOrder() {
-        var order = orderRepository.findById(OrderTestIT.TEST_ORDER_ID_FOR_DELETE);
+        var order = orderRepository.findById(OrderBuilder.TEST_ORDER_ID_FOR_DELETE);
 
         order.ifPresent(or -> orderRepository.delete(or));
 
-        assertThat(orderRepository.findById(OrderTestIT.TEST_ORDER_ID_FOR_DELETE)).isEmpty();
+        assertThat(orderRepository.findById(OrderBuilder.TEST_ORDER_ID_FOR_DELETE)).isEmpty();
 
     }
 
     @Test
     void shouldFindAllOrders() {
 
-        List<Order> orders = orderRepository.findAll();
+        List<com.dmdev.entity.Order> orders = orderRepository.findAll();
         assertThat(orders).hasSize(2);
 
-        List<BigDecimal> amounts = orders.stream().map(Order::getAmount).collect(toList());
+        List<BigDecimal> amounts = orders.stream().map(com.dmdev.entity.Order::getAmount).collect(toList());
         assertThat(amounts).containsExactlyInAnyOrder(BigDecimal.valueOf(1020.0).setScale(2), BigDecimal.valueOf(10000.0).setScale(2));
     }
 }

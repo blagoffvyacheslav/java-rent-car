@@ -6,8 +6,8 @@ import com.dmdev.dto.UserDetailsUpdateDto;
 import com.dmdev.service.UserDetailsService;
 import com.dmdev.service.UserService;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.dto.TestDto;
-import integration.com.dmdev.entity.UserDetailsTestIT;
+import utils.builder.TestDtoBuilder;
+import utils.builder.UserDetailsBuilder;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
@@ -26,15 +26,14 @@ class UserDetailsServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldSaveUserDetailsCorrectly() {
-        var userCreateDTO = TestDto.createUserCreateDTO();
+        var userCreateDTO = TestDtoBuilder.createUserCreateDTO();
 
         var actualUser = userService.create(userCreateDTO);
 
-        assertTrue(actualUser.isPresent());
-        assertEquals(userCreateDTO.getName(), actualUser.get().getUserDetailsDto().getName());
-        assertEquals(userCreateDTO.getLastname(), actualUser.get().getUserDetailsDto().getLastname());
-        assertEquals(userCreateDTO.getAddress(), actualUser.get().getUserDetailsDto().getAddress());
-        assertEquals(userCreateDTO.getPhone(), actualUser.get().getUserDetailsDto().getPhone());
+        assertEquals(userCreateDTO.getName(), actualUser.getUserDetailsDto().getName());
+        assertEquals(userCreateDTO.getLastname(), actualUser.getUserDetailsDto().getLastname());
+        assertEquals(userCreateDTO.getAddress(), actualUser.getUserDetailsDto().getAddress());
+        assertEquals(userCreateDTO.getPhone(), actualUser.getUserDetailsDto().getPhone());
     }
 
     @Test
@@ -51,7 +50,7 @@ class UserDetailsServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnUserDetailsByFilter() {
-        var userCreateDto = TestDto.createUserCreateDTO();
+        var userCreateDto = TestDtoBuilder.createUserCreateDTO();
         var userReadDto = userService.create(userCreateDto);
 
         var userDetailsFilter = UserDetailsFilterDto.builder()
@@ -63,13 +62,13 @@ class UserDetailsServiceTestIT extends IntegrationBaseTest {
         assertThat(userDetails.getContent()).hasSize(2);
         assertThat(userDetails.getTotalElements()).isEqualTo(2L);
         assertThat(userDetails.getNumberOfElements()).isEqualTo(2);
-        assertThat(userDetails.getContent().get(0).getAddress()).isEqualTo(userReadDto.get().getUserDetailsDto().getAddress());
+        assertThat(userDetails.getContent().get(0).getAddress()).isEqualTo(userReadDto.getUserDetailsDto().getAddress());
     }
 
     @Test
     void shouldReturnUserDetailsByNameAndLastname() {
-        var userCreateDto = TestDto.createUserCreateDTO();
-        var userDetailsDto = userService.create(userCreateDto).get().getUserDetailsDto();
+        var userCreateDto = TestDtoBuilder.createUserCreateDTO();
+        var userDetailsDto = userService.create(userCreateDto).getUserDetailsDto();
 
         var userDetails = userDetailsService.getAllByNameAndLastname("Semen", "Kobelev");
 
@@ -79,40 +78,38 @@ class UserDetailsServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnUserDetailsById() {
-        var userCreateDto = TestDto.createUserCreateDTO();
-        var expectedUserDetails = userService.create(userCreateDto).get().getUserDetailsDto();
+        var userCreateDto = TestDtoBuilder.createUserCreateDTO();
+        var expectedUserDetails = userService.create(userCreateDto).getUserDetailsDto();
 
         var actualUserDetails = userDetailsService.getById(expectedUserDetails.getId());
 
         assertThat(actualUserDetails).isNotNull();
-        assertEquals(expectedUserDetails, actualUserDetails.get());
+        assertEquals(expectedUserDetails, actualUserDetails);
     }
 
     @Test
     void shouldUpdateUserDetailsCorrectly() {
-        var userCreateDto = TestDto.createUserCreateDTO();
+        var userCreateDto = TestDtoBuilder.createUserCreateDTO();
         var userDetailsUpdateDto = new UserDetailsUpdateDto(
                 "test",
                 "test",
                 "Moscow",
                 "1111111111");
 
-        var savedUserDetails = userService.create(userCreateDto).get().getUserDetailsDto();
+        var savedUserDetails = userService.create(userCreateDto).getUserDetailsDto();
 
         var actualUserDetails = userDetailsService.update(savedUserDetails.getId(), userDetailsUpdateDto);
 
         assertThat(actualUserDetails).isNotNull();
-        actualUserDetails.ifPresent(userDetail -> {
-            assertEquals(userDetailsUpdateDto.getName(), userDetail.getName());
-            assertEquals(userDetailsUpdateDto.getLastname(), userDetail.getLastname());
-            assertSame(userDetailsUpdateDto.getAddress(), userDetail.getAddress());
-            assertSame(userDetailsUpdateDto.getPhone(), userDetail.getPhone());
-        });
+        assertEquals(userDetailsUpdateDto.getName(), actualUserDetails.getName());
+        assertEquals(userDetailsUpdateDto.getLastname(), actualUserDetails.getLastname());
+        assertSame(userDetailsUpdateDto.getAddress(), actualUserDetails.getAddress());
+        assertSame(userDetailsUpdateDto.getPhone(), actualUserDetails.getPhone());
     }
 
     @Test
     void shouldDeleteUserDetailByIdCorrectly() {
-        assertTrue(userDetailsService.deleteById(UserDetailsTestIT.TEST_USER_DETAILS_ID_FOR_DELETE));
+        assertTrue(userDetailsService.deleteById(UserDetailsBuilder.TEST_USER_DETAILS_ID_FOR_DELETE));
     }
 
     @Test

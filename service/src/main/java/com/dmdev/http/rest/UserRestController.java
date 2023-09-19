@@ -2,10 +2,15 @@ package com.dmdev.http.rest;
 
 import com.dmdev.dto.*;
 import com.dmdev.service.UserService;
+
+import com.dmdev.service.exception.BadRequestException;
+import com.dmdev.service.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +28,8 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import java.util.Optional;
+
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.notFound;
 
@@ -38,8 +45,8 @@ public class UserRestController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create user")
     public UserReadDto create(@Parameter(required = true) @RequestBody @Valid UserCreateDto userCreateDto) {
-        return userService.create(userCreateDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        return Optional.of(userService.create(userCreateDto))
+                .orElseThrow(() -> new BadRequestException("It's impossible to create user"));
     }
 
     @PutMapping("/{id}")
@@ -47,16 +54,16 @@ public class UserRestController {
     @Operation(summary = "Update user")
     public UserReadDto update(@Parameter(required = true) @PathVariable @Valid @NotNull Long id,
                               @Parameter(required = true) @RequestBody @Valid UserUpdateDto userUpdateDto) {
-        return userService.update(id, userUpdateDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        return Optional.of(userService.update(id, userUpdateDto))
+                .orElseThrow(() -> new BadRequestException("It's impossible to update user"));
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get a user by id")
     public UserReadDto findById(@Parameter(required = true) @PathVariable @Valid @NotNull Long id) {
-        return userService.getById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return Optional.of(userService.getById(id))
+                .orElseThrow(() -> new NotFoundException(NotFoundException.prepare("User", "id", id)));
     }
 
     @PostMapping("/{id}/change-password")
@@ -64,8 +71,8 @@ public class UserRestController {
     @Operation(summary = "Update user password")
     public UserReadDto changePassword(@Parameter(required = true) @PathVariable @Valid @NotNull Long id,
                                           @Parameter(required = true) @RequestBody @Valid UserChangePasswordDto changedPasswordDto) {
-        return userService.changePassword(id, changedPasswordDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        return Optional.of(userService.changePassword(id, changedPasswordDto))
+                .orElseThrow(() -> new BadRequestException("It's impossible to change user's password"));
     }
 
     @DeleteMapping("/{id}")

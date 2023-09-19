@@ -15,8 +15,12 @@
         <p th:text="${success_message}"></p>
       </div>
     </div>
+    <div th:if="${not #strings.isEmpty(errors)}">
+      <div class="alert alert-danger">
+        <p th:utext="${errors}"></p>
+      </div>
+    </div>
   </main>
-<div th:replace="layout/user/login :: login"></div>
 <div th:replace="layout/user/sign-up :: sign-up"></div>
 
 <script th:replace="layout/common :: modal"></script>

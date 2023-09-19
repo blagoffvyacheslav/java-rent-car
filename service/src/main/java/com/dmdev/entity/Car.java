@@ -32,8 +32,15 @@ public class Car implements BaseEntity<Long> {
     @NotNull
     private Boolean isNew = Boolean.FALSE;
 
+    private String image;
+
     @Builder.Default
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
+
+    public void setModel(Model model) {
+        this.model = model;
+        this.model.getCars().add(this);
+    }
 
 }

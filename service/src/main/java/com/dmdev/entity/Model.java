@@ -25,6 +25,9 @@ public class Model implements BaseEntity<Long> {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<CarRate> carRates = new HashSet<>();
+
     @Builder.Default
     @OneToMany(mappedBy = "model", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Car> cars = new HashSet<>();

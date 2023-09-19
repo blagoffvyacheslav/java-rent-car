@@ -5,13 +5,13 @@ import com.dmdev.dto.UserUpdateDto;
 import com.dmdev.dto.UserReadDto;
 import com.dmdev.entity.Role;
 import com.dmdev.service.UserService;
+import com.dmdev.service.exception.BadRequestException;
 import integration.com.dmdev.IntegrationBaseTest;
-import integration.com.dmdev.dto.TestDto;
-import integration.com.dmdev.entity.UserTestIT;
+import utils.builder.TestDtoBuilder;
+import utils.builder.UserBuilder;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,24 +30,23 @@ class UserServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldSaveUserCorrectly() {
-        var userCreateRequestDTO = TestDto.createUserCreateDTO();
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateDTO();
 
         var actualUser = userService.create(userCreateRequestDTO);
 
-        assertTrue(actualUser.isPresent());
-        assertEquals(userCreateRequestDTO.getName(), actualUser.get().getUserDetailsDto().getName());
-        assertEquals(userCreateRequestDTO.getLastname(), actualUser.get().getUserDetailsDto().getLastname());
-        assertEquals(userCreateRequestDTO.getEmail(), actualUser.get().getEmail());
-        assertEquals(userCreateRequestDTO.getUsername(), actualUser.get().getUsername());
-        assertEquals(userCreateRequestDTO.getDriverLicenseNumber(), actualUser.get().getDriverLicenseDto().getLicenseNumber());
-        assertSame(Role.ADMIN, actualUser.get().getRole());
+        assertEquals(userCreateRequestDTO.getName(), actualUser.getUserDetailsDto().getName());
+        assertEquals(userCreateRequestDTO.getLastname(), actualUser.getUserDetailsDto().getLastname());
+        assertEquals(userCreateRequestDTO.getEmail(), actualUser.getEmail());
+        assertEquals(userCreateRequestDTO.getUsername(), actualUser.getUsername());
+        assertEquals(userCreateRequestDTO.getDriverLicenseNumber(), actualUser.getDriverLicenseDto().getLicenseNumber());
+        assertSame(Role.ADMIN, actualUser.getRole());
     }
 
     @Test
     void shouldThrowExceptionWhenSaveUserWithExistsEmail() {
-        var userCreateRequestDTO = TestDto.createUserCreateDTOWithExistsEmail();
+        var userCreateRequestDTO = TestDtoBuilder.createUserCreateDTOWithExistsEmail();
 
-        var result = assertThrowsExactly(ResponseStatusException.class, () -> userService.create(userCreateRequestDTO));
+        var result = assertThrowsExactly(BadRequestException.class, () -> userService.create(userCreateRequestDTO));
 
         assertEquals(400, result.getRawStatusCode());
     }
@@ -67,10 +66,10 @@ class UserServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldReturnUserById() {
-        var userCreateRequestDto = TestDto.createUserCreateDTO();
+        var userCreateRequestDto = TestDtoBuilder.createUserCreateDTO();
         var expectedUser = userService.create(userCreateRequestDto);
 
-        var actualUser = userService.getById(expectedUser.get().getId());
+        var actualUser = userService.getById(expectedUser.getId());
 
         assertThat(actualUser).isNotNull();
         assertEquals(expectedUser, actualUser);
@@ -78,26 +77,24 @@ class UserServiceTestIT extends IntegrationBaseTest {
 
     @Test
     void shouldUpdateUserCorrectly() {
-        var userCreateRequestDto = TestDto.createUserCreateDTO();
+        var userCreateRequestDto = TestDtoBuilder.createUserCreateDTO();
         var userUpdateRequestDto = new UserUpdateDto(
                 "test1@gmal.com",
                 "test",
                 Role.CLIENT);
         var savedUser = userService.create(userCreateRequestDto);
 
-        var actualUser = userService.update(savedUser.get().getId(), userUpdateRequestDto);
+        var actualUser = userService.update(savedUser.getId(), userUpdateRequestDto);
 
         assertThat(actualUser).isNotNull();
-        actualUser.ifPresent(user -> {
-            assertEquals(userUpdateRequestDto.getEmail(), user.getEmail());
-            assertEquals(userUpdateRequestDto.getUsername(), user.getUsername());
-            assertSame(userUpdateRequestDto.getRole(), user.getRole());
-        });
+        assertEquals(userUpdateRequestDto.getEmail(), actualUser.getEmail());
+        assertEquals(userUpdateRequestDto.getUsername(), actualUser.getUsername());
+        assertSame(userUpdateRequestDto.getRole(), actualUser.getRole());
     }
 
     @Test
     void shouldDeleteUserByIdCorrectly() {
-        assertTrue(userService.deleteById(UserTestIT.TEST_EXISTS_USER_ID));
+        assertTrue(userService.deleteById(UserBuilder.TEST_EXISTS_USER_ID));
     }
 
     @Test
